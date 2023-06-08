@@ -1,0 +1,43 @@
+<%- include('../layouts/adminLayouts/header.ejs') %>
+<%- include('../layouts/adminLayouts/sidebar.ejs') %>
+<%- include('../layouts/adminLayouts/navbar.ejs') %>
+      <!-- partial -->
+      
+
+
+
+        <div class="main-panel">
+            <div class="content-wrapper">
+              
+              
+              <div class="row">
+                <div class="card-body">
+                    <h4 class="card-title">EDIT CATEGORY</h4>
+                    
+                    <form class="forms-sample" method="post" action="">
+                      
+                      
+                      <div class="form-group row">
+                        <label for="exampleInputMobile" class="col-sm-3 col-form-label">Category name</label>
+                        <div class="col-sm-9">
+                          <input type="text" class="form-control" id="exampleInputMobile" value="<%= Category.categoryName %>" name="categoryName">
+                        </div>
+                      </div>
+                      
+                      
+                      
+                      <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                      <a href="/admin/categoryList"><button class="btn btn-dark" >Cancel</button></a>
+                    </form>
+                  </div>
+
+
+
+
+
+
+
+              </div>
+            </div>
+            </div>
+            <%- include('../layouts/adminLayouts/footer.ejs') %>

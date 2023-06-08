@@ -1,0 +1,83 @@
+
+<%- include('../layouts/adminLayouts/header.ejs') %>
+<%- include('../layouts/adminLayouts/sidebar.ejs') %>
+<%- include('../layouts/adminLayouts/navbar.ejs') %>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="card-body">
+        <h4 class="card-title">PRODUCT LIST</h4>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <!-- <th>Description</th> -->
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (products.length > 0) { %>
+                <% for (let i = 0; i < products.length; i++) { %>
+                  <tr>
+                    <td><%= i + 1 %></td>
+                    <td class="py-1">
+                      <% for (let j = 0; j < 1; j++) { %>
+                        <img style="width: 50px; height: 50px;" src="/adminAssets/adminImages/<%= products[i].image[j] %>" alt="image" />
+                      <% } %>
+                    </td>
+                    <td><%= products[i].productName %></td>
+                    <td><%= products[i].price %></td>
+                    <td><%= products[i].brand %></td>
+                    <td><%= products[i].category %></td>
+                    <td><%= products[i].StockQuantity %></td>
+                    <td><a type="button" class="btn btn-primary rounded-0 mx-2" href="/admin/editProduct/<%= products[i]._id %>" type="button" >edit</a>
+                    
+                    
+                      <a type="button" class="btn btn-danger rounded-0" href="" data-bs-toggle="modal" data-bs-target="#staticBackdrop<%= products[i]._id %>">Delete</a>
+                    </td>
+                  </tr>
+                  <div class="modal fade" id="staticBackdrop<%= products[i]._id %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content" style="background-color: #191C24;color: aliceblue;">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Delete Category</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        <p>Are you sure you want to delete category <%= products[i].productName %>?</p>
+                        </div>
+                        <div class="modal-footer">
+                        <a href="/admin/productList"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button></a>
+                        <a href="/admin/deleteProduct?id=<%= products[i]._id %>"><button type="button" class="btn btn-primary">Yes</button></a>
+                        
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <% } %>
+              <% } else { %>
+                <tr>
+                  <td colspan="9">No products found.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+        <% if (typeof message !== 'undefined') { %>
+          <p style="color: red;"><%= message %></p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/adminLayouts/footer.ejs') %>
+

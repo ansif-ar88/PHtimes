@@ -1,0 +1,111 @@
+<%- include('../layouts/adminLayouts/header.ejs') %>
+<%- include('../layouts/adminLayouts/sidebar.ejs') %>
+<%- include('../layouts/adminLayouts/navbar.ejs') %>
+      <!-- partial -->
+      
+
+
+
+        <div class="main-panel">
+            <div class="content-wrapper">
+              
+              
+              <div class="row">
+                
+                <div class="card-body">
+                  <h4 class="card-title">CATEGORY LIST</h4>
+                  
+
+                  <a type="button" class="btn btn-secondary w-60" style="margin-top: 80px;margin-left: 10px;" data-bs-toggle="modal" data-bs-target="#addcategory">
+                    <i title="Add Category" class="fa fa-plus">ADD CATEGORY</i>
+                  </a>
+                  <% 
+
+				if(typeof mes !== 'undefined' ){
+				  
+				  %>
+					  <div class="alert alert-danger my-5" role="alert">
+						  <%= mes %>
+					  </div>
+
+				  <% 
+
+				}
+		  %>
+
+                        <!-- ================================ ADD CATEGORY ============================= -->
+
+                  <div class="modal fade" id="addcategory" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <!-- <h4 class="modal-title fs-5" id="exampleModalLabel">ADD PRODUCT</h4> -->
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                    
+                            <form class="forms-sample" method="post" action="/admin/insertCategory">
+                              <div class="form-group">
+                                <label for="exampleInputName1">CATEGORY NAME</label>
+                                <input type="text" class="form-control" id="exampleInputName1" placeholder="Name" name="categoryName">
+                              </div>
+                              
+                             <a href="/admin/categoryList"> <button type="submit" class="btn btn-primary mr-2" >Submit</button>
+                              <button class="btn btn-dark" id="Cancel" >Cancel</button></a>
+                            </form>
+                        </div>
+                      </div>
+                    </div>
+                    </div>
+                  <!-- </p> -->
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>NO</th>
+                          <th>NAME</th>
+                          <th>ACTIONS</th>
+                         
+                        </tr>
+                      </thead>
+                      <tbody>
+                      
+                        <% if (category.length > 0) { %>
+                          <% for (var i = 0; i < category.length; i++) { %>
+                            <tr>
+                              <td><%= i + 1 %></td>
+                              <td><%= category[i].categoryName %></td>
+                              <td>
+                                <% if (category[i].is_deleted == true){
+                                  %>
+                                <a class="btn btn-success" href="/admin/listcategory?id=<%= category[i]._id%>">list</a>
+                                <% }else{%>
+                                 <a class="btn btn-danger" href="/admin/unlistcategory?id=<%= category[i]._id %>">unlist</a>
+                               </td>  
+                              <!-- <td><a href="/admin/editCatogary?id=<%=category[i]._id%>" class="" href="" data-bs-target="#editcategory">
+                                Edit
+                              </a></td> --> <td>
+                              <a type="button" class="btn btn-success w-60" style="margin-top: 0px;margin-left: 10px;" 
+                              href="/admin/editCategory?id=<%=category[i]._id%>">
+                                EDIT CATEGORY
+                              </a>
+                            </td>
+                            </tr>
+                          <% } %>
+                        <% } %>
+                        <% } %>
+                          
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                </div>
+
+
+                    
+               
+              </div>
+              </div>
+              </div>
+              <%- include('../layouts/adminLayouts/footer.ejs') %>

@@ -1,0 +1,46 @@
+<%- include('../layouts/userLayouts/header.ejs') %>
+<%- include('../layouts/userLayouts/navbar.ejs') %>
+<main class="main">
+<div class="page-content">
+    <div class="dashboard">
+        <div class="container d-flex justify-content-center">
+
+<div class=" col-lg-6">
+    <form action="" method="post" >
+        
+                <label>Full Name *</label>
+                <input type="text" class="form-control" name="name" value="<%= address.userName %>">
+            
+
+        <label>Mobile number *</label>
+        <input type="text" class="form-control" name="mobile" value="<%= address.mobile %>">
+        <!-- <small class="form-text">This will be how your name will be displayed in the account section and in reviews</small> -->
+
+        <label>House Name *</label>
+        <input type="text" class="form-control" name="house" value="<%= address.houseName %>">
+
+        <label>city</label>
+        <input type="text" class="form-control" name="city" value="<%= address.city %>">
+
+        <label>State</label>
+        <input type="text" class="form-control" name="state" value="<%= address.state %>">
+
+        <label>Pincode</label>
+        <input type="text" class="form-control mb-2" name="pincode" value="<%= address.pincode %>">
+
+        <label>Landmark</label>
+        <input type="text" class="form-control mb-2" name="landmark" value="<%= address.landmark %>">
+
+        <button type="submit" class="btn btn-outline-primary-2">
+            <span>SAVE</span>
+            <i class="icon-long-arrow-right"></i>
+        </button>
+    </form>
+</div><!-- .End .tab-pane -->
+</div>
+</div>
+</div>
+
+</main>
+<%- include('../layouts/userLayouts/accountfooter.ejs') %>
+<%- include('../layouts/userLayouts/footer.ejs') %>

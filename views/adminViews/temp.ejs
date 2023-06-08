@@ -1,0 +1,147 @@
+<%- include('../adminLayouts/header.ejs') %>
+<%- include('../adminLayouts/navbar.ejs') %>
+
+<!-- Table Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="bg-secondary rounded h-100 p-4">
+                <div style="display: flex; justify-content: space-between;">
+                    <h6 class="mb-4">Product Table</h6>
+                    <button type="button" class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Add Product</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                              <th scope="col">No</th>
+                              <th scope="col">Image</th>
+                              <th scope="col">product Name</th>
+                              <th scope="col">Price</th>
+                              <th scope="col">Brand</th>
+                              <th scope="col">Category</th>
+                              <th scope="col">Stock</th>
+                              <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <% if (product.length > 0) { %>
+                            <% for (let i = 0; i < product.length; i++) { %>
+                              <tr>
+                                <td><%= i + 1 %></td>
+                                <td class="py-1">
+                                  <% for (let j = 0; j < 1; j++) { %>
+                                    <img style="width: 45px; height: 45px;" src="/adminAssets/adminImages/<%= product[i].image[j] %>" alt="image" />
+                                  <% } %>
+                                </td>
+                                <td><%= product[i].productName %></td>
+                                <td><%= product[i].price %></td>
+                                <td><%= product[i].brand %></td>
+                                <td><%= product[i].category %></td>
+                                <td><%= product[i].stockQuantity %></td>
+                                <td>
+                                  <a href="/admin/editProductList/<%= product[i]._id %>"><i class="bi bi-pencil-square bi fs-4"></i></a>
+                                  <a href="" data-bs-toggle="modal" data-bs-target="#staticBackdrop<%= product[i]._id %>"><i class="bi bi-trash bi fs-4 ms-3"></i></a>
+                                </td>
+                              </tr>
+                               <!-- Modal -->
+                                <div class="modal fade" id="staticBackdrop<%= product[i]._id %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                  <div class="modal-content" style="background-color: #191C24;color: aliceblue;">
+                                      <div class="modal-header">
+                                      <h5 class="modal-title" id="staticBackdropLabel">Delete Category</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                      <p>Are you sure you want to delete category <%= product[i].productName %>?</p>
+                                      </div>
+                                      <div class="modal-footer">
+                                      <a href="/admin/productList"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button></a>
+                                      <a href="/admin/deleteProduct?id=<%= product[i]._id %>"><button type="button" class="btn btn-primary">Yes</button></a>
+                                      
+                                      </div>
+                                  </div>
+                                  </div>
+                              </div>
+                            <% } %>
+                          <% } else { %>
+                            <tr>
+                              <td colspan="9">No product found.</td>
+                            </tr>
+                          <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>   
+
+<!-- ===================== Product adding modal =================================== -->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #191C24;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/admin/productList" method="post" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Product Name</label>
+            <input type="text" class="form-control" id="recipient-name" name="productName" required>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Brand</label>
+            <select class="form-select mb-3" aria-label="Default select example" name="brand">
+              <option value="FireFox">FireFox</option>
+              <option value="Hero">Hero</option>
+              <option value="Hercules">Hercules</option>
+              <option value="Bsa">Bsa</option>
+              <option value="Avon">Avon</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Category</label>
+            <select class="form-select mb-3" aria-label="Default select example" name="category">
+              <% for(let i = 0;i < category.length; i++){
+                %>
+              <option value="<%= category[i].categoryName%>">
+                <%= category[i].categoryName %>
+              </option>
+              <%
+            }
+            %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Image Upload</label>
+            <input class="form-control bg-dark" accept="Image/*" name="image" type="file" id="formFileMultiple" multiple required>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Stock Quantity</label>
+            <input type="text" class="form-control" id="recipient-name" name="stockQuantity" required>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Price</label>
+            <input type="text" class="form-control" id="recipient-name" name="price" required>
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">Discrption</label>
+            <textarea class="form-control" id="message-text" name="description" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+         </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+              
+<!-- ===================== Product edit modal =================================== -->
+
+
+<%- include('../adminLayouts/footer.ejs') %>
