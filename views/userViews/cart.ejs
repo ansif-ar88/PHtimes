@@ -24,11 +24,7 @@ input.btpos {
 </style>
 <div id="reloaddiv">
 <main class="main">
-    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        <div class="container">
-            <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
-        </div><!-- End .container -->
-    </div><!-- End .page-header -->
+    
     <nav aria-label="breadcrumb" class="breadcrumb-nav">
         <div class="container">
             <ol class="breadcrumb">
@@ -84,7 +80,7 @@ input.btpos {
                                       
                                         
                                             <input type="button" onclick="changeQuantity('<%=userId%>','<%=product.productId._id%>',-1)" class="btneg " value="-">
-                                            <input class="qun" type="text" name="noq1" id="noq1" readonly value="<%= product.count %>">
+                                            <input class="qun" type="text" name="noq1"  id="noq1" readonly value="<%= product.count %>">
                                             <input type="button" onclick="changeQuantity('<%=userId%>','<%=product.productId._id%>',1)" class="btpos " value="+">
                              
                                         <!-- End .cart-product-quantity -->
@@ -172,6 +168,7 @@ input.btpos {
 </main><!-- End .main -->
 </div>
 <script>
+    //CHANGE PRODUCT QUANTITY
      function changeQuantity(userId, proId, count) {
     $.ajax({
       url: '/changeQuantity',
@@ -183,8 +180,8 @@ input.btpos {
       method: 'post',
       success: (response) => {
         if (response.success) {
-        //   location.reload();
-        $("#reloaddiv").load('/cart #reloaddiv')
+          location.reload();
+        // $("#reloaddiv").load('/cart #reloaddiv')
         } else if (response.check) {
           swal.fire({
             icon: 'error',
@@ -199,45 +196,10 @@ input.btpos {
     });
   }
 
+// DELETE PRODUCT FROM CART
 
-    function deletecart(proid) {
+  
 
-
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You wan't to delete!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'yes, delete!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-
-                $.ajax({
-                    url: "/deletecart",
-                    data: {
-                        productId: proid
-                    },
-                    method: 'post',
-                    success: (response) => {
-                        console.log("waoring")
-
-                        $('#reloadDiv').load('/cart #reloadDiv')
-                        console.log(response);
-                        Swal.fire({
-                            title: 'deleted!',
-                            text: 'Your deleted',
-                            icon: 'success',
-                            showConfirmButton: false
-                        })
-
-                    }
-
-                })
-            }
-        })
-    }
 
 </script>
 

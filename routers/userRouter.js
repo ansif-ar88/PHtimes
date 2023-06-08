@@ -58,6 +58,7 @@ userRoute.post('/changeQuantity',Auth.isLogin,cartController.changeProductCount)
 userRoute.get('/cart',Auth.isLogin,cartController.loadCart);
 userRoute.get('/cartEmpty',Auth.isLogin,cartController.loadEmptyCart);
 
+
 userRoute.get('/address',Auth.isLogin,addressController.showAddress)
 userRoute.get('/addAddress',Auth.isLogin,addressController.loadAddAddress)
 userRoute.get('/editAddress/:id',Auth.isLogin,addressController.loadEditAddress)

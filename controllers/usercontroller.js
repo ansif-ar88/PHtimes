@@ -212,6 +212,7 @@ const loadShop = async (req, res) => {
       const catData = await categorymodel.find();
       const id = req.session.user_id
       const userdata = await usermodal.findById({_id: req.session.user_id})
+      
       res.render("shop", {
         userData: userdata,
         productData: productdata,
@@ -236,9 +237,16 @@ const loadShowproduct = async (req, res) => {
     if (req.session.user_id) {
      const session = req.session.user_id
      const id = req.params.id
+
       const data = await productmodel.findOne({ _id: id });
       const userData = await usermodal.findById({_id: req.session.user_id})
-      res.render("showProduct", { productData: data,userData:userData,session });
+
+      const cartData = await cartmodel.findOne({ userId: session });
+      const productExist = cartData.products.some(
+        (product) => product.productId == id);
+      res.render("showProduct", {
+         productExist,
+        productData: data,userData:userData,session });
     } else {
            const session = null
            const id = req.params.id

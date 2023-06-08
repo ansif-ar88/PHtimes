@@ -45,5 +45,5 @@ app.use('/', userRoute);
 //============ PORT ===========
 
 app.listen(process.env.portnumber, () => {
-  console.log("Server connected on port 1002");
+  console.log("Server connected on port 3000");
 });

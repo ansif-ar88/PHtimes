@@ -96,15 +96,15 @@ const addToCart = async (req, res) => {
   
       if (cartData) {
         //checking if it already exists
-        const productExist = cartData.products.some(
-          (product) => product.productId == productId
-        );
-        if (productExist) {
-          await cartmodel.findOneAndUpdate(
-            { userId: userId, "products.productId": productId },
-            { $inc: { "products.$.count": 1 } }
-          );
-        } else {
+        // const productExist = cartData.products.some(
+        //   (product) => product.productId == productId
+        // );
+        // if (productExist) {
+        //   await cartmodel.findOneAndUpdate(
+        //     { userId: userId, "products.productId": productId },
+        //     { $inc: { "products.$.count": 1 } }
+        //   );
+        // } else {
           await cartmodel.findOneAndUpdate(
             { userId: userId },
             {
@@ -112,12 +112,13 @@ const addToCart = async (req, res) => {
                 products: {
                   productId: productId,
                   productPrice: productData.price,
-                //   totalPrice: productData.price,
+                  totalPrice: productData.price,
                 },
               },
             }
           );
-        }
+        //  res.redirect("/showProduct")
+        // }
       } else {
         const newCart = new cartmodel({
           userId: userId,
@@ -130,6 +131,7 @@ const addToCart = async (req, res) => {
           ],
         });
         await newCart.save();
+        // res.redirect("/showProduct")
       }
       res.json({ success: true });
     } catch (error) {
@@ -181,9 +183,14 @@ const changeProductCount = async(req,res) =>{
 
 } 
 
+
+//======================= DELETE PRODUCT FROM CART ==================
+
+
 module.exports = {
   loadCart,
   addToCart,
   changeProductCount,
-  loadEmptyCart
+  loadEmptyCart,
+ 
 };
