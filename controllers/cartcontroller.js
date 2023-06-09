@@ -186,11 +186,31 @@ const changeProductCount = async(req,res) =>{
 
 //======================= DELETE PRODUCT FROM CART ==================
 
-
+const deletecart  = async (req,res) =>{
+  try {
+    const id = req.session.user_id;
+    const proId = req.body.product;
+    const cartData = await cartmodel.findOne({ userId: id });
+    if (cartData.products.length === 1) {
+       await cartmodel.deleteOne({ userId: id });
+       
+    } else {
+      await cartmodel.updateOne(
+        { userId: id },
+        { $pull: { products: { productId: proId } } }
+      );
+    }
+    res.json({ success: true });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
 module.exports = {
   loadCart,
   addToCart,
   changeProductCount,
   loadEmptyCart,
+  deletecart
  
 };
