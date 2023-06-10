@@ -3,11 +3,7 @@
 
 
 <main class="main">
-        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">Checkout<span>Shop</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
+        	
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
                 <div class="container">
                     <ol class="breadcrumb">
@@ -32,23 +28,22 @@
 		                		<div class="col-lg-9">
 		                			<h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
 									<div class="d-flex justify-content-end">
-										<a href="/addAddress" type="button" class="btn btn-success"> Add Address</a>
+										<a href="/addAddress" type="button" class="btn btn-outline-primary-2 mb-2"> Add Address</a>
 									
 									</div>
 		                				<div class="row">
 		                					<div class="col-lg-12">
 		                						
 
-<%
-if(address.length > 0){
-    address.forEach((address) =>{
-%>
+													<%
+														if(address.length > 0){
+    													address.forEach((address) =>{
+													%>
 
-                                                
-                                                        <div class="card card-dashboard">
-                                                            <div class="card-body">
-                                                                <input class="form-check-input" type="radio" name="flexRadioDefault" ><br>
-                                                                <h3 class="card-title"> Address</h3><!-- End .card-title -->
+                                                        <div class="card card-dashboard  ">
+                                                        <div class="card-body ">
+                                                        <input class="form-check-input" type="radio" name="flexRadioDefault" ><br>
+                                                        <h3 class="card-title"> Address</h3><!-- End .card-title -->
                                             <ul>
                                                 <li>full Name : <span><%= address.userName %></span></li>
                                                 <li>Mobile No : <%= address.mobile %></li>
@@ -61,7 +56,6 @@ if(address.length > 0){
                                                                 <a class="btn btn-outline-primary-2" type="button" href="/editAddress/<%= address._id %>">Edit </a> 
                                                                 <a class="btn btn-outline-primary-2 " type="button" onclick="deleteAddress('<%= address._id %>')">Delete </a>
                                                             </ul>
-                                                           
                                                         </div><!-- End .card-dashboard -->
                                                     <!-- </label> -->
                                                   </div>

@@ -93,8 +93,11 @@ input.btpos {
                         })
                             %>
                             <%
-                        }
+                        }else{
                             %>
+
+                            <h1>empty</h1>
+                        <%}%>
                             </tbody>
                         </table><!-- End .table table-wishlist -->
 
@@ -188,6 +191,14 @@ input.btpos {
             icon: 'error',
             title: 'Oops...',
             text: 'Out of stock'
+          });
+        }else{
+            swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: response.message,
+            showConfirmButton:false,
+            timer:1500
           });
         }
       },

@@ -114,12 +114,10 @@
 
 
                                 <% if (session != null) { %>
-                            <% if(productExist){ %>
-                               <a href="/cart"> <p class="btn btn-primary">View Cart</p></a>
-                                <%  }else{%>
+                            
                                     <button class="btn btn-primary" onclick="addtocart('<%=productData._id%>')">Add To Cart</button>
 
-                                        <%  }%>
+                                        
                                     <% } else { %>
                                     <button class="btn btn-primary" onclick="plzlogin()">Add To Cart</button>
                                 <% } %>
@@ -232,6 +230,16 @@
 
                  })
                  location.reload();
+             }else{
+                swal.fire({
+
+                positon:'center',
+                icon:"warning",
+                title  : 'product Quantity exceeded',
+                showConfirmButton:false,
+                timer : 1500,
+
+})
              }
          }
          
@@ -245,8 +253,8 @@
              
                  swal.fire({
                      positon:'center',
-                     icon: 'warning',
-                     title  : 'Please Login ',
+                    icon:"warning",
+                     title  : 'Please Login To Your Account',
                      showConfirmButton:false,
                      timer : 1500,
                  })

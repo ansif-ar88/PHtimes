@@ -8,7 +8,7 @@ const session = require("express-session");
 const nocache = require ("nocache")
 
 const morgan = require('morgan');
-app.use(morgan('tiny'));
+// app.use(morgan('tiny'));
 
 
 //================= SESSION ===============
