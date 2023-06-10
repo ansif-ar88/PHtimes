@@ -57,7 +57,7 @@ orderWallet:{
     type:Number
 },
 },
-{timestamps:true}
+// {timestamps:true}
 )
 
 const ordermodel = mongoose.model("order",orderSchema);

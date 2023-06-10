@@ -241,11 +241,11 @@ const loadShowproduct = async (req, res) => {
       const data = await productmodel.findOne({ _id: id });
       const userData = await usermodal.findById({_id: req.session.user_id})
 
-      const cartData = await cartmodel.findOne({ userId: session });
-      const productExist = cartData.products.some(
-        (product) => product.productId == id);
+      // const cartData = await cartmodel.findOne({ userId: session });
+      // const productExist = cartData.products.some(
+      //   (product) => product.productId == id);
       res.render("showProduct", {
-         productExist,
+        //  productExist,
         productData: data,userData:userData,session });
     } else {
            const session = null

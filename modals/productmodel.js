@@ -29,7 +29,7 @@ const mongoose = require ('mongoose');
         required:true,
     },
     StockQuantity:{
-        type :String,
+        type :Number,
         required:true,
     },
     Status:{
