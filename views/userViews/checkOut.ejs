@@ -18,12 +18,12 @@
             	<div class="checkout">
 	                <div class="container">
             			<div class="checkout-discount">
-            				<form action="#">
+            				<form action="" >
         						<input type="text" class="form-control" required id="checkout-discount-input">
             					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
             				</form>
             			</div><!-- End .checkout-discount -->
-            			<form action="#">
+            			<form action="" id="checkoutForm">
 		                	<div class="row">
 		                		<div class="col-lg-9">
 		                			<h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
@@ -42,7 +42,7 @@
 
                                                         <div class="card card-dashboard  ">
                                                         <div class="card-body ">
-                                                        <input class="form-check-input" type="radio" name="flexRadioDefault" ><br>
+                                                        <input class="form-check-input " type="radio" name="selectAddress" value="<%= address.userName %>,<%= address.mobile %>,<%= address.houseName %>,<%= address.city %>,<%= address.state %>,<%= address.pincode %>,<%= address.landmark %>" ><br>
                                                         <h3 class="card-title"> Address</h3><!-- End .card-title -->
                                             <ul>
                                                 <li>full Name : <span><%= address.userName %></span></li>
@@ -86,7 +86,7 @@
 		                						
 		                						<tr class="summary-subtotal">
 		                							<td>Subtotal:</td>
-		                							<td>₹ <%= Total %>.00</td>
+		                							<td >₹<span id="gt2"><%= Total %>.00</span> </td>
 		                						</tr><!-- End .summary-subtotal -->
 		                						<tr>
 		                							<td>Shipping:</td>
@@ -94,7 +94,7 @@
 		                						</tr>
 		                						<tr class="summary-total">
 		                							<td>Total:</td>
-		                							<td>₹ <%= totalAmount %>.00</td>
+		                							<td >₹ <span id="gt4"><%= totalAmount %>.00</span></td>
 		                						</tr><!-- End .summary-total -->
 		                					</tbody>
 		                				</table><!-- End .table table-summary -->
@@ -133,7 +133,7 @@
 										                <!-- <a class="collapsed" type="radio">
 										                    Cash on delivery
 										                </a> -->
-														<input type="radio">    Cash on delivery
+														<input type="radio" id="COD" value="COD" name="payment">    Cash on delivery
 										            </h2>
 										        </div><!-- End .card-header -->
 										        <!-- <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment"> -->
@@ -226,5 +226,39 @@
     }
   });
 }
+
+$("#checkoutForm").submit((e) => {
+	const amount = document.getElementById("gt4").innerHTML;
+	let address = $("input[name=selectAddress]:checked").val();
+	let payment = $("input[name=payment]:checked").val();
+	e.preventDefault()
+	$.ajax({
+		url:"/placeOrder",
+		method:"post",
+		data:{
+			amount:amount,
+			address:address,
+			payment:payment
+	},
+	success:(response) =>{
+		if(response.codSuccess == true){
+			swal.fire({
+                  positon: 'center',
+                  icon: "success",
+                  title: 'Order Placed Successfully',
+                  showConfirmButton: false,
+                  showCancelButton: true,
+                  cancelButtonText: "Go to Shop",
+              }).then((result) => {
+                  if (result.dismiss === swal.DismissReason.cancel) {
+                      // Redirect to the shop page
+                      window.location.href = "/shop";
+                  }
+              });
+		}
+	}
+
+	})
+})
 		</script>
         <%- include('../layouts/userLayouts/footer.ejs') %>

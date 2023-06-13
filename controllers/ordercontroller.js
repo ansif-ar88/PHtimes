@@ -1,9 +1,10 @@
 const session = require("express-session")
-const usermodal = require('../modals/usermodal')
+const usermodel = require('../modals/usermodal')
 const addressmodel = require ('../modals/addressmodel')
 const cartmodel = require('../modals/cartmodel')
 const ordermodel = require('../modals/ordermodel')
 const { now } = require("mongoose")
+const productmodel = require("../modals/productmodel")
 
 
 //================== LOLAD CHECKOUT =====================
@@ -11,7 +12,7 @@ const { now } = require("mongoose")
 const loadChekout = async(req,res)=>{
     try {
       const session = req.session.user_id
-      const userData = await usermodal.findOne ({_id:req.session.user_id});
+      const userData = await usermodel.findOne ({_id:req.session.user_id});
       const addressData = await addressmodel.findOne({userId:req.session.user_id});
       const total = await cartmodel.aggregate([
         { $match: { userId: req.session.user_id } },
@@ -75,28 +76,63 @@ const loadChekout = async(req,res)=>{
 const placeOrder = async (req,res) => {
   try {
     const id = req.session.user_id
-    const userName = usermodal.findOne({_id:id})
+    const userName = await usermodel.findOne({_id:id})
     const address = req.body.address
     const paymentMethod = req.body.payment
-    const cartData = cartmodel.findOne({userId:id})
+    const cartData =  await cartmodel.findOne({userId:id})
     const products = cartData.products
 
-    const Total = req.body.amount
-    const totalPrice = parseInt(req.body.total)
+    const Total = parseInt(req.body.amount)
+   
 
     const status = paymentMethod === "COD" ? "placed" : "pending";
     const order = new ordermodel({
       deliveryAddress:address,
       userId: id,
+      userName:userName.name,
       paymentMethod: paymentMethod,
       products: products,
       totalAmount:Total,
-      Amount:totalPrice,
+      // Amount:totalPrice,
       date:new Date(),
       status:status,
 
     })
+   
     const orderData = await order.save()
+    if (orderData) {
+      for(let i= 0;i<products.length;i++){
+        const pro =products[i].productId;
+        const count = products[i].count;
+        await productmodel.findByIdAndUpdate({_id:pro},{$inc:{StockQuantity: -count}});
+
+      }
+        await cartmodel.deleteOne({userId:id})   //there is a chance
+        res.json({codSuccess : true})
+    
+    } else {
+      res.redirect("/checkout")
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+// ==================== LOAD ORDERS IN USER SIDE ================== 
+
+const loadOrderUser = async(req,res) => {
+  try {
+    if(req.session.user_id){
+      const session = req.session.user_id
+      const id = req.session.user_id
+      const userdata = await usermodel.findById({_id: id})
+      const orders = await ordermodel.find({userId:id}).populate("products.productId")
+      
+      res.render("orders", { userData: userdata,session,orders:orders });
+    }else{
+      const session = null
+      res.redirect("/home",{message:"please login"})
+    }
   } catch (error) {
     console.log(error.message);
   }
@@ -104,6 +140,7 @@ const placeOrder = async (req,res) => {
   module.exports = {
     loadChekout,
     placeOrder,
+    loadOrderUser
     // loadEmptyCheckout
 
     

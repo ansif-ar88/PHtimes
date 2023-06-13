@@ -122,10 +122,14 @@
                                     <button class="btn btn-primary" onclick="plzlogin()">Add To Cart</button>
                                 <% } %>
                                
-                                <!-- <button class="btn btn-primary" onclick="addtocart('<%=productData._id%>')">Add To Cart</button> -->
+                                
                                 <div class="details-action-wrapper">
-                                    <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                    <!-- <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a> -->
+                                    <% if (session != null) { %>
+                                    <button onclick="addtoWishlist('<%=productData._id%>')" class="btn btn-outline-dark-2" title="Wishlist"><span>Add to Wishlist</span></button>
+                                    <% } else { %>
+                                        <button class="btn btn-outline-dark-2" onclick="plzlogin()">Add to Wishlist</button>
+                                        <% } %>
+                                
                                 </div><!-- End .details-action-wrapper -->
                             </div><!-- End .product-details-action -->
 
@@ -196,7 +200,7 @@
                         <div class="product-desc-content">
                             <h3>Delivery & returns</h3>
                             <p>We deliver to over 100 countries around the world. For full details of the delivery options we offer, please view our <a href="#">Delivery information</a><br>
-                            We hope you’ll love every purchase, but if you ever need to return an item you can do so within a month of receipt. For full details of how to make a return, please view our <a href="#">Returns information</a></p>
+                            We hope you'll love every purchase, but if you ever need to return an item you can do so within a month of receipt. For full details of how to make a return, please view our <a href="#">Returns information</a></p>
                         </div><!-- End .product-desc-content -->
                     </div><!-- .End .tab-pane -->
                     
@@ -241,6 +245,41 @@
 
 })
              }
+         }
+         
+     })
+    }
+    function addtoWishlist(productid){
+     $.ajax({
+         url:"/addtoWishlist",
+         method:"post",
+         data:{
+             id:productid
+         },
+         success:(response)=>{
+             if(response.success){
+                 swal.fire({
+
+                     positon:'center',
+                     icon:"success",
+                     title  : 'product added to cart',
+                     showConfirmButton:false,
+                     timer : 1500,
+
+                 })
+                 location.reload();
+             }
+//              else{
+//                 swal.fire({
+
+//                 positon:'center',
+//                 icon:"warning",
+//                 title  : 'product Quantity exceeded',
+//                 showConfirmButton:false,
+//                 timer : 1500,
+
+// })
+//              }
          }
          
      })

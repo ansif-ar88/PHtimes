@@ -28,6 +28,7 @@ const userController = require("../controllers/usercontroller")
 const cartController = require ('../controllers/cartcontroller.js')
 const addressController = require('../controllers/addresscontroller')
 const orderController =  require ('../controllers/ordercontroller')
+const wishlistController = require('../controllers/wishlistcontroller')
 
 
 
@@ -50,7 +51,7 @@ userRoute.get("/shop", userController.loadShop)
 userRoute.get("/showProduct/:id", userController.loadShowproduct)
 
 userRoute.get("/profile",Auth.isLogin,userController.loadProfile)
-userRoute.get("/orders",Auth.isLogin,userController.loadOrder)
+
 
 
 userRoute.post('/addtocart',Auth.isLogin,cartController.addToCart);
@@ -72,6 +73,15 @@ userRoute.post('/deleteAddress',Auth.isLogin,addressController.deleteAddress)
 
 userRoute.get('/checkout',Auth.isLogin,orderController.loadChekout)
 // userRoute.get('/checkout',Auth.isLogin,orderController.loadEmptyCheckout)
+userRoute.post('/placeOrder',orderController.placeOrder);
+userRoute.get("/orders",Auth.isLogin,orderController.loadOrderUser)
+
+
+userRoute.get('/wishlist',Auth.isLogin,wishlistController.loadWishlist)
+userRoute.post('/addtoWishlist',Auth.isLogin,wishlistController.addToWishlist);
+userRoute.post('/addtocartfromwish',Auth.isLogin,wishlistController.addToCartFromWish);
+
+
 
 
 module.exports = userRoute

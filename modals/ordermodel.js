@@ -21,7 +21,7 @@ paymentId:{
     type:String
 },
 products: [{
-    productid:{
+    productId:{
         type:String,
         required:true,
         ref:"product"
@@ -43,10 +43,10 @@ totalAmount:{
     type:Number,
     required:true
 },
-Amount:{
-    type:Number,
-    required:true
-},
+// Amount:{
+//     type:Number,
+//     required:true
+// },
 date:{
     type:Date
 },

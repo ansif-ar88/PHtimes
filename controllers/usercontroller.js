@@ -279,23 +279,7 @@ const loadProfile = async (req, res) => {
   }
 };
 
-// ==================== LOAD ORDERS ================== it should be in order controller
 
-const loadOrder = async(req,res) => {
-  try {
-    if(req.session.user_id){
-      const session = req.session.user_id
-      const id = req.session.user_id
-      const userdata = await usermodal.findById({_id: req.session.user_id})
-      res.render("orders", { userData: userdata,session });
-    }else{
-      const session = null
-      res.redirect("/home",{message:"please login"})
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-}
 
 
 module.exports = {
@@ -311,7 +295,7 @@ module.exports = {
   loadVerification,
   sendVerifyMail,
   verifyEmail,
-  loadOrder,
+  // loadOrder,
 
 };
 
