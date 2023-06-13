@@ -1,0 +1,144 @@
+<%- include('../layouts/userLayouts/header.ejs') %>
+ <%-include('../layouts/userLayouts/navbar.ejs') %>
+
+ <div class="page-wrapper  ">
+    <div class="row ">
+    
+        <main class="main">
+      
+
+        <div class="page-content">
+            <div class="container">
+                <div class="product-details-top">
+                    <div class="row justify-content-center ">
+                        
+                       
+
+                        <div class="col-md-6 d-flex ">
+                            <% if(orders.length > 0){
+                                orders.forEach((order)=>{ %>
+                            <div class="product-details sticky-content">
+                               
+                                <div class="details-filter-row details-row-size">
+                                    <label for="size">Date : </label>
+                                    
+                                    <!-- <div class="product-nav product-nav-thumbs"> -->
+                                        <p><%= order.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></p>
+                                  
+                                </div><!-- End .details-filter-row -->
+                                <div class="details-filter-row details-row-size">
+                                    <label for="size">Total  :  </label><span>  </span>
+                                    
+                                    <!-- <div class="product-nav product-nav-thumbs"> -->
+                                        <p><%= order.totalAmount%></p>
+                                  
+                                </div><!-- End .details-filter-row -->
+
+                          
+
+                                <div class="details-filter-row details-row-size">
+                                    <label for="qty">Payment:  </label>
+                                    <div>
+                                        <div class="product-nav product-nav-thumbs">
+                                            <%= order.paymentMethod%>
+                                          </div>
+                                    </div><!-- End .select-custom -->
+                                    
+                                </div><!-- End .details-filter-row -->
+                                <div class="details-filter-row details-row-size">
+                                    <label for="qty">Address :  </label>
+                                    <div>
+                                        <div class="product-nav product-nav-thumbs">
+                                            <%= order.deliveryAddress%>
+                                          </div>
+                                    </div><!-- End .select-custom -->
+                                    
+                                </div><!-- End .details-filter-row -->
+
+                                <div class="product-details-action">
+                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+
+                                    <div class="details-action-wrapper">
+                                        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                                        <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+                                    </div><!-- End .details-action-wrapper -->
+                                    
+                                </div><!-- End .product-details-action -->
+
+                            </div><!-- End .product-details -->
+                            
+
+
+
+
+                                
+
+
+
+
+
+                        </div><!-- End .col-md-6 -->
+
+
+                    </div><!-- End .row -->
+                </div><!-- End .product-details-top -->
+            </div><!-- End .container -->
+        </div><!-- End .page-content -->
+                    
+        
+        <table class="table table-cart table-mobile mx-5">
+                            <thead>
+                                <tr>
+                                  
+                                  <th>   </th>
+                                  <th>Product</th>
+                                  
+                                  <th>Price</th>
+                                 
+                                  
+                                  <th>Action</th>
+                                </tr>
+                            </thead>
+                           
+                            <tbody>
+                              <%
+                                    for(let i = 0 ; i < order.products.length; i++){
+                                  %>
+                                  <tr>
+                                  <td class="product-col">
+                                    <div class="product">
+                                        <figure class="product-media">
+                                            <a >
+                                                
+                                                    <img src="/adminAssets/adminImages/<%= order.products[i].productId.image[0]%>" alt="Product image">
+                                               
+                                            </a>
+                                        </figure>
+                                        </div>
+                                      </td>
+                                        
+                                      
+                                      <td> <%= order.products[0].productId.productName%></td>
+                                      
+                                    
+                                  
+                                  
+                                
+                                  <td><%= order.products[i].productId.price%></td>
+                                 
+                                  
+                                  <td><a class="btn btn-outline-primary-2" href="">CANCEL</a></td>
+                                </tr>
+                                  <%}})
+                                }
+                                 %>
+                            </tbody>
+                           
+                        </table><!-- End .table table-wishlist -->
+                 
+    </main><!-- End .main -->  
+    
+
+</div>
+</div>
+ <%-include('../layouts/userLayouts/footer.ejs') %>

@@ -101,31 +101,7 @@
 
 		                				<div class="accordion-summary" id="accordion-payment">
 
-										    <!-- <div class="card">
-										        <div class="card-header" id="heading-1">
-										            <h2 class="card-title">
-										                <a role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
-										                    Direct bank transfer
-										                </a>
-										            </h2>
-										        </div>
-										        <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-payment">
-										        
-										        </div>
-										    </div> -->
-
-										    <!-- <div class="card">
-										        <div class="card-header" id="heading-2">
-										            <h2 class="card-title">
-										                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
-										                    Check payments
-										                </a>
-										            </h2>
-										        </div>
-										        <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
-										           
-										        </div>
-										    </div> -->
+										    
 
 										    <div class="card">
 										        <div class="card-header" id="heading-3">
@@ -133,42 +109,24 @@
 										                <!-- <a class="collapsed" type="radio">
 										                    Cash on delivery
 										                </a> -->
-														<input type="radio" id="COD" value="COD" name="payment">    Cash on delivery
-										            </h2>
+														<input type="radio" id="COD" value="COD" name="payment">Cash on delivery</h2>
 										        </div><!-- End .card-header -->
-										        <!-- <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment"> -->
-										            
 										        </div><!-- End .collapse -->
 										    </div><!-- End .card -->
+		                				<div class="accordion-summary" id="accordion-payment">
 
-										    <!-- <div class="card">
-										        <div class="card-header" id="heading-4">
-										            <h2 class="card-title">
-										                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-4" aria-expanded="false" aria-controls="collapse-4">
-										                    PayPal 
-                                                            
-										                </a>
-										            </h2>
-										        </div>
-										        <div id="collapse-4" class="collapse" aria-labelledby="heading-4" data-parent="#accordion-payment">
-										           
-										        </div>
-										    </div> -->
+										    
 
-										    <!-- <div class="card">
-										        <div class="card-header" id="heading-5">
+										    <div class="card">
+										        <div class="card-header" id="heading-3">
 										            <h2 class="card-title">
-										                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-5" aria-expanded="false" aria-controls="collapse-5">
-										                    Credit Card (Stripe)
-										                    <img src="userAssets/images/payments-summary.png" alt="payments cards">
-										                </a>
-										            </h2>
-										        </div><!-- End .card-header -- -->
-										        <!-- <div id="collapse-5" class="collapse" aria-labelledby="heading-5" data-parent="#accordion-payment"> -->
-										           
-										        </div><!-- End .collapse --
-										    </div><!-- End .card --
-										</div><!-- End .accordion -->
+										                
+														<input type="radio" id="onlinePayment" value="onlinePayment" name="payment">Razor Pay</h2>
+										        </div><!-- End .card-header -->
+										        </div><!-- End .collapse -->
+										    </div><!-- End .card -->
+										        </div><!-- End .collapse -->
+										   
 
 		                				<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
 		                					<span class="btn-text">Place Order</span>
@@ -255,10 +213,78 @@ $("#checkoutForm").submit((e) => {
                       window.location.href = "/shop";
                   }
               });
+		}else{
+			razorpayPayment(response.order);
 		}
 	}
 
 	})
 })
+function razorpayPayment(order){
+	var options = {
+    "key": "rzp_test_W1c7v7Q09L27uH", 
+    "amount": order.amount, 
+    "currency": "INR",
+    "name": "PH Times",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function(response) {
+       verifyPayment(response,order);
+    },
+    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+    rzp1.open(); 
+}
+
+function verifyPayment(payment,order){
+	const amount2 =document.getElementById("gt4").innerHTML;
+	$.ajax({
+		url:"/verifyPayment",
+		method :"post",
+		data:{
+			payment:payment,
+			amount2:amount2,
+			order:order
+		},
+		success:(response) =>{
+			if(response.success){
+				swal.fire({
+					positon:'center',
+					icon:"success",
+					title:"Your Order Placed Successfully",
+					showConfirmButton:false,
+					showCancelButton:true,
+					cancelButtonText:"Back To Shop",
+
+				}).then((result)=>{
+					if(result.dismiss === swal.DismissReason.cancel){
+						window.location.href = "/shop";
+					}
+				});
+			}else{
+				swal.fire({
+            positon: 'center',
+            icon: "error",
+            title: 'payment failed',
+            showConfirmButton: false,
+            timer:1500,
+        })
+			}
+			
+		}
+	})
+}
 		</script>
         <%- include('../layouts/userLayouts/footer.ejs') %>

@@ -73,8 +73,11 @@ userRoute.post('/deleteAddress',Auth.isLogin,addressController.deleteAddress)
 
 userRoute.get('/checkout',Auth.isLogin,orderController.loadChekout)
 // userRoute.get('/checkout',Auth.isLogin,orderController.loadEmptyCheckout)
+userRoute.post('/verifyPayment',orderController.verifyPayment)
 userRoute.post('/placeOrder',orderController.placeOrder);
+
 userRoute.get("/orders",Auth.isLogin,orderController.loadOrderUser)
+userRoute.get("/vieworder/:id",Auth.isLogin, orderController.loadViewSingleUser)
 
 
 userRoute.get('/wishlist',Auth.isLogin,wishlistController.loadWishlist)

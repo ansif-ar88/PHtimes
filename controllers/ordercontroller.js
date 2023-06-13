@@ -5,6 +5,9 @@ const cartmodel = require('../modals/cartmodel')
 const ordermodel = require('../modals/ordermodel')
 const { now } = require("mongoose")
 const productmodel = require("../modals/productmodel")
+const razorpay = require("razorpay")
+const crypto = require("crypto")
+
 
 
 //================== LOLAD CHECKOUT =====================
@@ -70,6 +73,10 @@ const loadChekout = async(req,res)=>{
 //     }
 // }
 
+var instance = new razorpay({
+  key_id: process.env.RazorpayKeyId,
+  key_secret: process.env.RazorpayKeySecret,
+});
 
 // ============ PLACE ORDER =================
 
@@ -107,11 +114,48 @@ const placeOrder = async (req,res) => {
         await productmodel.findByIdAndUpdate({_id:pro},{$inc:{StockQuantity: -count}});
 
       }
-        await cartmodel.deleteOne({userId:id})   //there is a chance
+      if(order.status === 'placed'){
+        await cartmodel.deleteOne({userId:id})  
         res.json({codSuccess : true})
-    
+      }else{
+        const orderId = orderData._id;
+        const totalAmount = orderData.totalAmount;
+        var options = {
+          amount : totalAmount*100,
+          currency : 'INR',
+          receipt : ''+ orderId
+        }
+        instance.orders.create(options,function(err,order){
+          res.json({order})
+        })
+      }
     } else {
       res.redirect("/checkout")
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+//===================== RAZORPAY VERIFY PAYMENT ===================
+
+const verifyPayment = async(req,res)=>{
+  try {
+    const details = req.body
+    console.log(details)
+    const crypto = require('crypto');
+    const hmac = crypto.createHmac('sha256',process.env.RazorpayKeySecret);
+    hmac.update(details.payment.razorpay_order_id + '|' + details.payment.razorpay_payment_id);
+    const hmacValue = hmac.digest('hex');
+
+    if(hmacValue === details.payment.razorpay_signature){
+      await ordermodel.findOneAndUpdate({_id:details.order.receipt},{$set:{status:"placed"}});
+      await ordermodel.findOneAndUpdate({_id:details.order.receipt},{$set:{paymentId:details.payment.razorpay_payment_id}})
+      await cartmodel.deleteOne({userId:req.session.user_id})
+      res.json({success:true});
+    }else{
+      await ordermodel.findByIdAndRemove({_id:details.order.receipt});
+      res.json({success:false})
     }
   } catch (error) {
     console.log(error.message);
@@ -127,7 +171,6 @@ const loadOrderUser = async(req,res) => {
       const id = req.session.user_id
       const userdata = await usermodel.findById({_id: id})
       const orders = await ordermodel.find({userId:id}).populate("products.productId")
-      
       res.render("orders", { userData: userdata,session,orders:orders });
     }else{
       const session = null
@@ -137,10 +180,27 @@ const loadOrderUser = async(req,res) => {
     console.log(error.message);
   }
 }
+
+//======================== LOAD SINGLE ORDER USER SIDE =================
+
+const loadViewSingleUser = async (req,res)=> {
+  try {
+    const session =req.session.user_id
+    const userdata = await usermodel.findOne({_id: session})
+    const id = req.params.id
+    const orders = await ordermodel.find({_id:id}).populate("products.productId")
+    console.log(orders);
+    res.render("singleOrder",{session,userData:userdata,orders:orders})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
   module.exports = {
     loadChekout,
     placeOrder,
-    loadOrderUser
+    loadOrderUser,
+    loadViewSingleUser,
+    verifyPayment
     // loadEmptyCheckout
 
     

@@ -1,37 +1,20 @@
-<%- include('../layouts/userLayouts/header.ejs') %> <%-
-include('../layouts/userLayouts/navbar.ejs') %> <%-
-include('../layouts/userLayouts/accountsidebar.ejs') %>
+<%- include('../layouts/userLayouts/header.ejs') %>
+ <%-include('../layouts/userLayouts/navbar.ejs') %>
+ <div class="page-wrapper">
+  <%-include('../layouts/userLayouts/accountsidebar.ejs') %>
 
-<!-- <div>
-  <table>
 
-    <thead>
-      <tr>
-        
-      </tr>
-    </thead>
-    <tbody>
-      
 
-      
-    
-    </tbody>
-  </table>
-  <a href="/shop" class="btn btn-outline-primary-2"
-    ><span>GO SHOP</span><i class="icon-long-arrow-right"></i
-  ></a>
-</div> -->
-<!-- .End .tab-pane -->
-
-<div class="row">
+<div class="row ">
+ <!-- <div class="col-md-8 col-lg-10"> -->
                     <div class="col-lg-12">
                         <table class="table table-cart table-mobile">
                             <thead>
                                 <tr>
                                   
                                   <th>   </th>
-                                  <th>order date</th>
                                   <th>Product</th>
+                                  <th>order date</th>
                                   <th>Total Amount</th>
                                   <th>Payment</th>
                                   <th>Status</th>
@@ -44,10 +27,6 @@ include('../layouts/userLayouts/accountsidebar.ejs') %>
                                 orders.forEach((order)=>{
                                   %>
                                   <tr>
-                                  
-                                  
-                                 
-                                    
                                   <td class="product-col">
                                     <div class="product">
                                         <figure class="product-media">
@@ -60,16 +39,17 @@ include('../layouts/userLayouts/accountsidebar.ejs') %>
                                         </div>
                                       </td>
                                         
-                                      <td> <%= order.date%></td>
+                                      
                                       <td> <%= order.products[0].productId.productName%></td>
-                                        
+                                      <td><%= order.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
+                                    
                                   
                                   
                                 
                                   <td><%= order.totalAmount%></td>
                                   <td><%= order.paymentMethod %></td>
                                   <td><%= order.status%></td>
-                                  <td><button class="btn btn-outline-primary-2">VIEW</button></td>
+                                  <td><a class="btn btn-outline-primary-2" href="vieworder/<%= order._id %>">VIEW</a></td>
                                 </tr>
                                   <%})
                                 } %>
@@ -79,6 +59,9 @@ include('../layouts/userLayouts/accountsidebar.ejs') %>
                         
                       
                     </div><!-- End .col-lg-9 -->
+                    <!--</div> End .col-lg-9 -->
+                    </div><!-- End .col-lg-9 -->
+                  </div>
 
-<%- include('../layouts/userLayouts/accountfooter.ejs') %> <%-
-include('../layouts/userLayouts/footer.ejs') %>
+<%- include('../layouts/userLayouts/accountfooter.ejs') %>
+ <%-include('../layouts/userLayouts/footer.ejs') %>
