@@ -37,16 +37,17 @@ products: [{
     totalPrice:{
         type:Number,
         default:0,
+    },
+    status:{
+        type:String,
+        default:"placed"
     }
+
 }],
 totalAmount:{
     type:Number,
     required:true
 },
-// Amount:{
-//     type:Number,
-//     required:true
-// },
 date:{
     type:Date
 },

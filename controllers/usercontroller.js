@@ -170,13 +170,13 @@ const verifyLogin = async (req, res) => {
 };
 
 //================= LOAD HOME PAGE ===============
-const loadHome = async (req, res) => {
+const loadHome = async (req, res,next) => {
   try {
-    if(req.session.user_id){
-      const session = req.session.user_id
+    const id = req.session.user_id
+    const session = id
+    if(id){
       const productdata = await productmodel.find()
-      const id = req.session.user_id
-      const userData = await usermodal.findById({_id: req.session.user_id})
+      const userData = await usermodal.findById({_id: id})
       res.render("home",{productData:productdata,userData:userData,session})
     }else{
       const session = null
@@ -279,7 +279,25 @@ const loadProfile = async (req, res) => {
   }
 };
 
+//====================== FILTER BY CATEGORY ==================
 
+const filterByCategory =async (req,res)=>{
+  try {
+    const id = req.params.id
+    const session = req.session.user_id
+    const categoryData = await categorymodel.find({is_deleted : false})
+    const userData = await usermodal.find({})
+    const productData = await productmodel.find({category:id,Status:true})
+    if (categoryData.length > 0) {
+      res.render("shop",{session,userData:userData,productData:productData,category:categoryData})
+    } else {
+      res.render("shop",{session,userData:userData,productData:[],category:categoryData})
+
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 
 module.exports = {
@@ -295,6 +313,10 @@ module.exports = {
   loadVerification,
   sendVerifyMail,
   verifyEmail,
+  filterByCategory,
+
+
+
   // loadOrder,
 
 };

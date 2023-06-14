@@ -1,24 +1,9 @@
 const express = require("express")
 const userRoute = express()
-// const session = require("express-session") ;
-// const nocache = require ("nocache")
-// const config = require("../config/config")
-
-// userRoute.use(
-//     session({
-//         secret:config.sessionSecret,
-//         saveUninitialized:true,
-//         resave:false,
-//         cookie:{
-//             maxAge:500000,
-//         },
-//     })
-// );
-// userRoute.use(nocache())
 const Auth = require("../middleware/userAuth")
+const errorHandler = require('../middleware/errorHandler')
 
-// userRoute.use(express.json())
-// userRoute.use(express.urlencoded({ extended: true}))
+
 
 //view engine
 userRoute.set("view engine","ejs");
@@ -48,6 +33,7 @@ userRoute.get("/home",userController.loadHome)
 userRoute.get("/logout",Auth.isLogin, userController.userLogout);
 
 userRoute.get("/shop", userController.loadShop)
+userRoute.get("/filterCategory/:id",userController.filterByCategory)
 userRoute.get("/showProduct/:id", userController.loadShowproduct)
 
 userRoute.get("/profile",Auth.isLogin,userController.loadProfile)
@@ -76,14 +62,21 @@ userRoute.get('/checkout',Auth.isLogin,orderController.loadChekout)
 userRoute.post('/verifyPayment',orderController.verifyPayment)
 userRoute.post('/placeOrder',orderController.placeOrder);
 
+
 userRoute.get("/orders",Auth.isLogin,orderController.loadOrderUser)
 userRoute.get("/vieworder/:id",Auth.isLogin, orderController.loadViewSingleUser)
-
+userRoute.post('/cancelOrder',Auth.isLogin,orderController.CancelOrder);
 
 userRoute.get('/wishlist',Auth.isLogin,wishlistController.loadWishlist)
 userRoute.post('/addtoWishlist',Auth.isLogin,wishlistController.addToWishlist);
 userRoute.post('/addtocartfromwish',Auth.isLogin,wishlistController.addToCartFromWish);
+userRoute.post('/deletewishlist',Auth.isLogin,wishlistController.deleteWishlist);
 
+
+
+
+
+userRoute.use(errorHandler)
 
 
 

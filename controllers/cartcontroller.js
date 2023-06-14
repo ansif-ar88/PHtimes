@@ -213,7 +213,7 @@ const deletecart = async(req,res)=>{
 
    if (cartData.products.length === 1) {
         await cartmodel.deleteOne({userId:id})
-        // res.render('cart')
+        
    } else {
     const found = await cartmodel.updateOne({userId:id},{$pull:{products:{productId:proid}}})
 

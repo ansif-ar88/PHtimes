@@ -166,15 +166,41 @@ const verifyPayment = async(req,res)=>{
 
 const loadOrderUser = async(req,res) => {
   try {
-    if(req.session.user_id){
       const session = req.session.user_id
       const id = req.session.user_id
       const userdata = await usermodel.findById({_id: id})
       const orders = await ordermodel.find({userId:id}).populate("products.productId")
-      res.render("orders", { userData: userdata,session,orders:orders });
+      if(orders.length > 0){
+
+        res.render("orders", { userData: userdata,session,orders:orders });
+
     }else{
-      const session = null
-      res.redirect("/home",{message:"please login"})
+      // const session = null
+      // res.redirect("/home",{message:"please login"})
+      res.render("orders", { userData: userdata,session,orders:[] });
+
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+// ==================== LOAD ORDERS IN ADMIN SIDE ================== 
+
+const loadOrderAdmin = async(req,res) => {
+  try {
+      const session = req.session.Auser_id
+      const id = req.session.user_id
+      const adminData = await usermodel.findOne({is_admin : 1})
+      const orders = await ordermodel.find().populate("products.productId")
+
+      if(orders.length > 0){
+
+        res.render("orders", {orders:orders,admin:adminData});
+
+    }else{
+      res.render("orders", { orders:[],admin:adminData });
+
     }
   } catch (error) {
     console.log(error.message);
@@ -185,22 +211,81 @@ const loadOrderUser = async(req,res) => {
 
 const loadViewSingleUser = async (req,res)=> {
   try {
+    const id = req.params.id
     const session =req.session.user_id
     const userdata = await usermodel.findOne({_id: session})
-    const id = req.params.id
-    const orders = await ordermodel.find({_id:id}).populate("products.productId")
-    console.log(orders);
+    const orders = await ordermodel.findOne({_id:id}).populate("products.productId")
+  
     res.render("singleOrder",{session,userData:userdata,orders:orders})
   } catch (error) {
     console.log(error.message);
   }
 }
+
+
+//======================== LOAD SINGLE ORDER ADMIN SIDE =================
+
+const loadViewSingleAdmin = async (req,res)=> {
+  try {
+    const id = req.params.id
+    const adminData = await usermodel.findOne({is_admin : 1})
+    const orderData = await ordermodel.findOne({_id:id}).populate("products.productId")
+    console.log(orderData);
+    res.render("singleOrder",{admin:adminData,orders:orderData})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+//======================== CANCEL ORDER =====================
+const CancelOrder = async (req, res) => {
+  try {
+    const id = req.body.id;
+    console.log(id);
+    const Id = req.session.user_id
+    const userData = await ordermodel.findById(Id)
+    const orderData = await ordermodel.findOne({ userId: Id, 'products._id': id})
+    const product = orderData.products.find((Product) => Product._id.toString() === id);
+    const cancelledAmount = product.totalPrice   
+    console.log(cancelledAmount);  
+    const updatedOrder = await ordermodel.findOneAndUpdate(
+      {
+        userId: Id,
+        'products._id': id
+      },
+      {
+        $set: {
+          'products.$.status': 'cancelled'
+        }
+      },
+      { new: true }
+    );
+
+
+    if (updatedOrder) {
+      if(orderData.paymentMethod === 'onlinePayment'){
+         await usermodel.findByIdAndUpdate({_id:Id},{$inc:{wallet:cancelledAmount}})
+         res.json({ success: true });
+      }else{
+         res.json({ success: true });
+      }
+    } else {
+      res.json({ success: false });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
   module.exports = {
     loadChekout,
     placeOrder,
     loadOrderUser,
     loadViewSingleUser,
-    verifyPayment
+    verifyPayment,
+    loadOrderAdmin,
+    loadViewSingleAdmin,
+    CancelOrder
+
     // loadEmptyCheckout
 
     

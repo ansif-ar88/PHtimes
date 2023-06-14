@@ -18,7 +18,7 @@ const verifyLogin = async (req, res) => {
     const password = req.body.password;
 //THIS IS AN EDITED AREA
     const userData = await usermodal.findOne({ email: email });
-    console.log(userData);
+    // console.log(userData);
     if (userData) {
       const passwordMatch = await bcrypt.compare(password, userData.password);
 

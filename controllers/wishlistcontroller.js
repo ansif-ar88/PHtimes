@@ -141,9 +141,31 @@ const addToCartFromWish = async (req, res) => {
     }
   }
 
+  //======================= DELETE PRODUCT FROM WISHLIST ==================
+const deleteWishlist = async(req,res)=>{
+  try{
+   const id = req.session.user_id
+   const proid = req.body.product
+   const wishlistData = await wishlistmodel.findOne({userId:id});
+
+   if (wishlistData.products.length === 1) {
+        await wishlistmodel.deleteOne({userId:id})
+        
+   } else {
+    const found = await wishlistmodel.updateOne({userId:id},{$pull:{products:{productId:proid}}})
+   }
+    res.json({success:true})
+
+      
+  }catch(error){
+    console.log(error.message);
+  }
+  
+}
 module.exports = {
     loadWishlist,
     addToWishlist,
-    addToCartFromWish
+    addToCartFromWish,
+    deleteWishlist,
 
 }
