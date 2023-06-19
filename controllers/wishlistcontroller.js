@@ -14,6 +14,7 @@ const loadWishlist = async(req,res) => {
         if(wishlistData.length > 0){
             const wishlist = wishlistData[0].products;
             const products = wishlist.map(wish => wish.productId);
+            console.log(wishlist);
                 res.render("wishlist",{
                     products,
                     wishlist,

@@ -21,6 +21,16 @@
           
             </div>
      </div>
+     </div>
+
+     
+     <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+     <div class="card-body ">
+      <h4 class="card-title">Hoverable Table</h4>
+      <p class="card-description"> Add class <code>.table-hover</code>
+      </p>
+
         <div class="table-responsive">
           <table class="table table">
             <thead>
@@ -62,7 +72,23 @@
                     <td><%= order.productPrice%></td>
                     
                     <td><%= order.status%></td>
-                    <td>dropdown</td>
+                    <td>
+                    <%  if(order.status == 'cancelled' ){%>
+                      <p class="text-danger">cancelled</p>
+                   <% }else{ %>
+                   <div class="dropdown">
+                      <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuOutlineButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> ACTIONS </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuOutlineButton2">
+                        
+                        <a class="dropdown-item" onclick="updateStatus(this,'<%= order._id %>','<%= orders.userId %>')" href="#">placed</a>
+                        <a class="dropdown-item" onclick="updateStatus(this,'<%= order._id %>','<%= orders.userId %>')" href="#">shiped</a>
+                        <a class="dropdown-item" onclick="updateStatus(this,'<%= order._id %>','<%= orders.userId %>')" href="#">out for delivery</a>
+                        <a class="dropdown-item" onclick="updateStatus(this,'<%= order._id %>','<%= orders.userId %>')" href="#">Delivered</a>
+                        
+                      </div>
+                    </div>
+                    <%}%>
+                  </td>
                   </tr>
                
                   <%
@@ -74,11 +100,33 @@
             </tbody>
           </table>
         </div>
+        </div>
+        </div>
+        </div>
        
-      </div>
+      
     </div>
   </div>
 </div>
+<script>
+
+  function updateStatus(status, id ,userId) {
+
+    $.ajax({
+      url: '/admin/updateStatus',
+      method: 'post',
+      data: { 
+        status: status.innerText,
+        id: id,
+        userId:userId
+      },
+      success: (Response) => {
+        location.reload();
+      },
+    });
+  }
+
+</script>
 
 <%- include('../layouts/adminLayouts/footer.ejs') %>
 

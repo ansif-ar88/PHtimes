@@ -33,17 +33,17 @@ const loadChekout = async(req,res)=>{
             if(addressData.addresses.length>0){
               const address = addressData.addresses
               const Total = total.length > 0 ? total[0].total : 0; 
-              const totalAmount = Total+80;
+              const totalAmount = Total;
               res.render('checkOut',{session,Total,address:address,totalAmount,userData:userData})
             }
             else{
                 const Total = total.length > 0 ? total[0].total : 0; 
-                const totalAmount = Total+80;
+                const totalAmount = Total;
               res.render('emptyCheckout',{session,Total,totalAmount,userData:userData,message:"Add your delivery address"});
             }
           }else{
             const Total = total.length > 0 ? total[0].total : 0; 
-            const totalAmount = Total+80;
+            const totalAmount = Total;
             res.render('emptyCheckout',{session,Total,totalAmount,userData:userData,message:"Add your delivery address"});
           }
         }else{
@@ -118,6 +118,7 @@ const placeOrder = async (req,res) => {
         await cartmodel.deleteOne({userId:id})  
         res.json({codSuccess : true})
       }else{
+        
         const orderId = orderData._id;
         const totalAmount = orderData.totalAmount;
         var options = {
@@ -142,7 +143,7 @@ const placeOrder = async (req,res) => {
 const verifyPayment = async(req,res)=>{
   try {
     const details = req.body
-    console.log(details)
+    
     const crypto = require('crypto');
     const hmac = crypto.createHmac('sha256',process.env.RazorpayKeySecret);
     hmac.update(details.payment.razorpay_order_id + '|' + details.payment.razorpay_payment_id);
@@ -230,7 +231,6 @@ const loadViewSingleAdmin = async (req,res)=> {
     const id = req.params.id
     const adminData = await usermodel.findOne({is_admin : 1})
     const orderData = await ordermodel.findOne({_id:id}).populate("products.productId")
-    console.log(orderData);
     res.render("singleOrder",{admin:adminData,orders:orderData})
   } catch (error) {
     console.log(error.message);
@@ -241,13 +241,13 @@ const loadViewSingleAdmin = async (req,res)=> {
 const CancelOrder = async (req, res) => {
   try {
     const id = req.body.id;
-    console.log(id);
     const Id = req.session.user_id
     const userData = await ordermodel.findById(Id)
     const orderData = await ordermodel.findOne({ userId: Id, 'products._id': id})
     const product = orderData.products.find((Product) => Product._id.toString() === id);
-    const cancelledAmount = product.totalPrice   
-    console.log(cancelledAmount);  
+    const cancelledAmount = product.totalPrice
+    const proCount = product.count
+    const proId = product.productId   
     const updatedOrder = await ordermodel.findOneAndUpdate(
       {
         userId: Id,
@@ -263,8 +263,13 @@ const CancelOrder = async (req, res) => {
 
 
     if (updatedOrder) {
+         await productmodel.findByIdAndUpdate({_id:proId},{$inc:{StockQuantity:proCount}})
       if(orderData.paymentMethod === 'onlinePayment'){
          await usermodel.findByIdAndUpdate({_id:Id},{$inc:{wallet:cancelledAmount}})
+        //  await ordermodel.findByIdAndUpdate({_id:Id},{$inc:{totalAmount:-cancelledAmount}})
+
+        await ordermodel.findByIdAndUpdate(Id, { $inc: { totalAmount: -cancelledAmount } });
+
          res.json({ success: true });
       }else{
          res.json({ success: true });
@@ -276,6 +281,33 @@ const CancelOrder = async (req, res) => {
     console.log(error.message);
   }
 };
+
+// ================ CHANGE STATUS OR FLOW OF ORDER CHANGE =============
+const changeStatus = async(req,res) =>{
+  try {
+    const id = req.body.id
+    const userId = req.body.userId
+    const statusChange = req.body.status
+    
+    const updatedOrder = await ordermodel.findOneAndUpdate(
+      {
+        userId: userId,
+        'products._id': id
+      },
+      {
+        $set: {
+          'products.$.status': statusChange
+        }
+      },
+      { new: true }
+    );
+    if(updatedOrder){
+      res.json({success:true})
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
   module.exports = {
     loadChekout,
     placeOrder,
@@ -284,7 +316,8 @@ const CancelOrder = async (req, res) => {
     verifyPayment,
     loadOrderAdmin,
     loadViewSingleAdmin,
-    CancelOrder
+    CancelOrder,
+    changeStatus
 
     // loadEmptyCheckout
 

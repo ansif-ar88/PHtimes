@@ -9,7 +9,8 @@ const path = require("path")
 
 const productList = async (req,res) => {
     try {
-        const productData = await productmodel.find({Status:true});
+        const productData = await productmodel.find({Status:true}).populate('category')
+        console.log(productData);
         const adminData = await usermodal.findById({ _id: req.session.Auser_id });
         res.render("productList",{products : productData,admin:adminData});
         // res.redirect('/productList')
@@ -43,13 +44,14 @@ const insertProduct = async(req,res) => {
         }
     }
         // const category = await categorymodel.findById(req.body.id);
+        const category = await categorymodel.findById(req.body.category);
         const new_product = new productmodel({
             productName : req.body.productName,
             price : req.body.price,
             image : image,
             idealfor : req.body.idealfor,
             brand : req.body.brand,
-            category : req.body.category,
+            category : category,
             StockQuantity : req.body.StockQuantity,
             description : req.body.description,
 
@@ -85,9 +87,11 @@ const editUpdateProduct = async (req,res) =>{
     if(req.body.productName.trim()=== "" || req.body.category.trim() === "" || req.body.description.trim() === "" || req.body.StockQuantity.trim() === "" || req.body.price.trim() === "" ) {
         const id = req.params.id
         const productData = await productmodel.findOne({_id:id}).populate('category')
-        const categoryData =categorymodel.find()
+        console.log(productData);
+        // const categoryData =categorymodel.find()
+        const categoryData = await categorymodel.find({})
         const adminData = await usermodal.findById({_id:req.session.Auser_id})
-        res.render('editProduct',{admin:adminData,products: productData, message:"All fields required",categorydata:categoryData})
+        res.render('editProduct',{admin:adminData,products: productData,category:categoryData, message:"All fields required",})
     }else{
         try {
             const arrayimg = []

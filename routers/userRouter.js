@@ -35,6 +35,10 @@ userRoute.get("/logout",Auth.isLogin, userController.userLogout);
 userRoute.get("/shop", userController.loadShop)
 userRoute.get("/filterCategory/:id",userController.filterByCategory)
 userRoute.get("/showProduct/:id", userController.loadShowproduct)
+userRoute.post("/form", userController.searchProduct)
+userRoute.get("/priceSort/:id", userController.priceSort)
+
+
 
 userRoute.get("/profile",Auth.isLogin,userController.loadProfile)
 
@@ -76,7 +80,7 @@ userRoute.post('/deletewishlist',Auth.isLogin,wishlistController.deleteWishlist)
 
 
 
-userRoute.use(errorHandler)
+// userRoute.use(errorHandler)
 
 
 

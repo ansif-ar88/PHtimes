@@ -59,6 +59,7 @@ const saveCategory = async(req,res) =>{
         
         const name = req.body.categoryName;
         const catData = await category.findOneAndUpdate({_id:req.query.id}  ,{$set:{categoryName:name}});
+        
         if(catData){
             res.redirect('categoryList')
         }

@@ -1,85 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>USER</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="../adminAssets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="../adminAssets/vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="../adminAssets/css/style.css">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="../adminAssets/images/favicon.png" />
-  </head>
-  <body>
-    <div class="container-scroller">
-      <div class="container-fluid page-body-wrapper full-page-wrapper">
-        <div class="row w-100 m-0">
-          <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
-            <div class="card col-lg-4 mx-auto">
-              <div class="card-body px-5 py-5">
-                <h3 class="card-title text-left mb-3">OTP</h3>
-                <form action="" method="post">
-                  <div class="form-group">
-                    <label>Your otp</label>
-                    <input type="text" class="form-control p_input" name="otp">
-                  </div>
-                  
-                  
-                 
-                
+<%- include('../layouts/userLayouts/header.ejs') %>
 
-                  <% 
 
-                  if(typeof message !== 'undefined' ){
-                    
-                    %>
-                      <P style="text-align: center;color: red;">
-                        <%= message %>
-                      </P>
+<header class="header header-7">
+ 
+
+  <div class="header-middle sticky-header">
+      <div class="container-fluid">
+          <div class="header-left">
+              <button class="mobile-menu-toggler">
+                  <span class="sr-only">Toggle mobile menu</span>
+                  <i class="icon-bars"></i>
+              </button>
+              
+              <a href="/home" class="logo">
+                  <img src="/userAssets/images/demos/demo-7/userlogo.jpg" alt="Molla Logo" width="105" height="25">
+              </a>
+
+              <nav class="main-nav">
+                  <ul class="menu sf-arrows">
+                      <li class="megamenu-container ">
+                          <a href="/home" >Home</a>
+
+                          
+                      </li>
+                      <li>
+                          <a href="/shop">Shop</a>
+
+                      </li>
+                      
+                  </ul><!-- End .menu -->
+              </nav><!-- End .main-nav -->
+          </div><!-- End .header-left -->
+
           
-                    <% 
+          </div><!-- End .header-right -->
+      </div><!-- End .container-fluid -->
+  </div><!-- End .header-middle -->
+</header><!-- End .header -->
+<main class="main">
+  <div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17" style="background-image: url('userAssets/images/backgrounds/login-bg.jpg')">
+    <div class="container">
+      <div class="form-box">
+        <div class="form-tab">
+          <ul class="nav nav-pills nav-fill" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="signin-tab-2" data-toggle="tab" href="#signin-2" role="tab" aria-controls="signin-2" aria-selected="false">OTP</a>
+        </li>
+
+    </ul>
+    <div class="tab-content">
+        
+          <form action="" method="post">
+            <div class="form-group pt-5">
+              <label for="singin-email-2 ">your OTP  *</label>
+              <input type="text" class="form-control" id="singin-email-2" name="otp" required>
+            </div><!-- End .form-group -->							    		
+            <div class="form-footer">
+              <button type="submit" class="btn btn-outline-primary-2">
+                      <span>Verify</span>
+                    <i class="icon-long-arrow-right"></i>
+                    </button>	
+            </div><!-- End .form-footer -->
+                              <% 
+
+        if(typeof message !== 'undefined' ){
           
-                  }
-                %>
-                  <div class="text-center">
-                    <button type="submit" class="btn btn-primary btn-block enter-btn">SIGNUP</button>
-                  </div>
-                 
-                  <p class="sign-up text-center">Already have an Account?<a href="/login"> login</a></p>
-                 
+          %>
+            <P style="text-align: center;color: red;">
+              <%= message %>
+            </P>
 
+          <% 
+
+        }
+      %>
+          </form>
+          <div class="form-choice">
+            <p class="text-center">Already have an anccount</p>
+            <div class="row">
+              <div class="col-sm-6">
+                <p class="text-dark text-end"></p> 
+              </div><!-- End .col-6 -->
+              <div class="col-sm-6">
+                <a href="/login" class="btn btn-login ">
                   
-
-                </form>
-              </div>
-            </div>
-          </div>
-          <!-- content-wrapper ends -->
-        </div>
-        <!-- row ends -->
-      </div>
-      <!-- page-body-wrapper ends -->
-    </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="../adminAssets/vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="../adminAssets/js/off-canvas.js"></script>
-    <script src="../adminAssets/js/hoverable-collapse.js"></script>
-    <script src="../adminAssets/js/misc.js"></script>
-    <script src="../adminAssets/js/settings.js"></script>
-    <script src="../adminAssets/js/todolist.js"></script>
-    <!-- endinject -->
-  </body>
-</html>
+                  Login
+                </a>
+              </div><!-- End .col-6 -->
+            </div><!-- End .row -->
+          </div><!-- End .form-choice -->
+        </div><!-- .End .tab-pane -->
+        <!-- <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2"> -->
+          
+          
+        </div><!-- .End .tab-pane -->
+    </div><!-- End .tab-content -->
+  </div><!-- End .form-tab -->
+      </div><!-- End .form-box -->
+    </div><!-- End .container -->
+  </div><!-- End .login-page section-bg -->
+</main><!-- End .main -->
+<%- include('../layouts/userLayouts/footer.ejs') %>

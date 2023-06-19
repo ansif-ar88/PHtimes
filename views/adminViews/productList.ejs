@@ -6,7 +6,10 @@
 <div class="main-panel">
   <div class="content-wrapper">
     <div class="row">
+      <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
       <div class="card-body">
+        
         <h4 class="card-title">PRODUCT LIST</h4>
         <div class="table-responsive">
           <table class="table table-hover">
@@ -36,7 +39,7 @@
                     <td><%= products[i].productName %></td>
                     <td><%= products[i].price %></td>
                     <td><%= products[i].brand %></td>
-                    <td><%= products[i].category %></td>
+                    <td><%= products[i].category.categoryName %></td>
                     <td><%= products[i].StockQuantity %></td>
                     <td><a type="button" class="btn btn-primary rounded-0 mx-2" href="/admin/editProduct/<%= products[i]._id %>" type="button" >edit</a>
                     
@@ -74,6 +77,8 @@
         <% if (typeof message !== 'undefined') { %>
           <p style="color: red;"><%= message %></p>
         <% } %>
+      </div>
+      </div>
       </div>
     </div>
   </div>

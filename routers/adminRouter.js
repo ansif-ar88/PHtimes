@@ -50,6 +50,8 @@ adminRoute.post('/editCategory', Auth.isLogin, categoryController.saveCategory);
 adminRoute.get("/orders",Auth.isLogin,orderController.loadOrderAdmin)
 adminRoute.get("/vieworder/:id",Auth.isLogin, orderController.loadViewSingleAdmin)
 
+adminRoute.post("/updateStatus",Auth.isLogin,orderController.changeStatus)
+
 
 adminRoute.use(errorHandler)
 

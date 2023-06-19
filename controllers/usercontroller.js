@@ -6,6 +6,19 @@ const usermodal = require("../modals/usermodal");
 const session = require("express-session")
 const nodemailer = require("nodemailer")
 const cartmodel = require('../modals/cartmodel')
+const passwordValidator = require('password-validator');
+
+var schema = new passwordValidator();
+
+
+schema
+.is().min(8)                                    // Minimum length 8
+.is().max(100)                                  // Maximum length 100
+.has().uppercase()                              // Must have uppercase letters
+.has().lowercase()                              // Must have lowercase letters
+.has().digits(2)                                // Must have at least 2 digits
+.has().not().spaces()                           // Should not have spaces
+
 
 const securePassword = async (password) => {
   try {
@@ -36,7 +49,7 @@ const loadLogin = async (req, res) => {
 //================= INSERT USER ===============
 const insertUser = async (req, res) => {
   try {
-    const spassword = await securePassword(req.body.password);
+    
 
     const existingUser = await User.findOne({ email: req.body.email });
     if (existingUser) {
@@ -44,11 +57,16 @@ const insertUser = async (req, res) => {
         message: "email already exists",
       });
     }
-    if (!req.body.name || req.body.name.trim().length === 0) {
+    const passStrong = await schema.validate(req.body.password)
+
+    if (!passStrong) {
       res.render("signup", {
-        message: "please enter valid name",
+        message: "password not strong",
+        
       });
+      return
     }
+    const spassword = await securePassword(req.body.password);
 
     const user = new User({
       name: req.body.name,
@@ -209,7 +227,7 @@ const loadShop = async (req, res) => {
 
     if (req.session.user_id) {
       const session = req.session.user_id
-      const catData = await categorymodel.find();
+      const catData = await categorymodel.find({is_deleted:false});
       const id = req.session.user_id
       const userdata = await usermodal.findById({_id: req.session.user_id})
       
@@ -285,13 +303,13 @@ const filterByCategory =async (req,res)=>{
   try {
     const id = req.params.id
     const session = req.session.user_id
-    const categoryData = await categorymodel.find({is_deleted : false})
+    const catData = await categorymodel.find({is_deleted:false })
     const userData = await usermodal.find({})
-    const productData = await productmodel.find({category:id,Status:true})
-    if (categoryData.length > 0) {
-      res.render("shop",{session,userData:userData,productData:productData,category:categoryData})
+    const productData = await productmodel.find({category:id,Status:true}).populate('category')
+    if (catData.length > 0) {
+      res.render("shop",{session,userData:userData,productData:productData,category:catData})
     } else {
-      res.render("shop",{session,userData:userData,productData:[],category:categoryData})
+      res.render("shop",{session,userData:userData,productData:[],category:catData})
 
     }
   } catch (error) {
@@ -299,6 +317,56 @@ const filterByCategory =async (req,res)=>{
   }
 }
 
+//===================== SEARCH PRODUCT ====================
+
+const searchProduct = async (req,res)=>{
+  try{
+     const searchData = req.body.search;
+     const search = searchData.trim()
+     const session = req.session.user_id;
+     const userData = await usermodal.find({})
+     const categoryData = await categorymodel.find({is_deleted:false});
+    //  const productData = await productmodel.find(
+    //  {$or: [
+    //   {productName:{$regex:`^${search}`, $options:'i'}},
+    //   {brand:{$regex:`^${search}`, $options:'i'}},
+    //   {category:{$regex:`^${search}`, $options:'i'}},]}
+    //   );
+    
+      const productData = await productmodel.find({productName:{$regex: `^${search}`,$options:'i'}});
+  
+     
+     if(productData.length > 0){
+      res.render('shop',{session,category:categoryData,productData:productData,userData:userData});
+     }else{
+      res.render('shop',{session,category:categoryData,productData:productData,userData:userData});
+     }
+
+  }catch(error){
+    console.log(error.message);
+  }
+}
+
+const priceSort = async(req,res) => {
+  try {
+    const id = req.params.id
+    const session = req.session.user_id;
+     const userData = await usermodal.find({})
+     const catData = await categorymodel.find({is_delete:false});
+     const productData = await productmodel.find({}).populate('category').sort({price: id})
+    if (productData){
+      console.log(productData);
+      res.render('shop',{session,category:catData,productData:productData,userData:userData});
+    }else {
+      res.render('shop',{session,category:catData,productData:productData,userData:userData});
+    }
+
+  } catch (error) {
+    console.log(error.message);
+  }
+  
+
+}
 
 module.exports = {
   loadHome,
@@ -314,6 +382,8 @@ module.exports = {
   sendVerifyMail,
   verifyEmail,
   filterByCategory,
+  searchProduct,
+  priceSort,
 
 
 

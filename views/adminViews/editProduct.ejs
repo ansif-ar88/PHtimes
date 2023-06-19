@@ -52,13 +52,10 @@
                               <div class="col-sm-9">
                                 <select class="form-control" name="category">
                                    
-                                    <%
-                 for(let i=0;i<category.length;i++){
-                  %>
-                  <option><%=category[i].categoryName%></option>
-                  <%
-                }
-                 %>
+                                  <% category.forEach(cat => { %>
+                                    <option value="<%= cat._id %>"><%= cat.categoryName %></option>
+                                  <% }) %>
+                                  
                                 </select>
                               </div>
                             </div>

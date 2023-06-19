@@ -9927,7 +9927,7 @@ input[type="button"].btn-block {
   background-color: transparent;
   border: 0; }
   .dropdown-item:hover, .dropdown-item:focus {
-    color: #16181b;
+    color: #ffffff;
     text-decoration: none;
     background-color: #13151b; }
   .dropdown-item.active, .dropdown-item:active {
@@ -21135,3 +21135,12 @@ div.tagsinput {
   flex-grow: 1; }
 
 /*# sourceMappingURL=maps/style.css.map */
+
+
+
+
+
+/* externaly added
+.card-body {
+  background-color: #191c24 !important;
+} */

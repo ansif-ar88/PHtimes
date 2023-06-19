@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const mongoose = require ('mongoose');
 // const { type } = require('os');
 
@@ -24,9 +25,10 @@ const mongoose = require ('mongoose');
         type : String,
         required:true,
     },
-    category : {     // type
-        type : String,
+    category : { 
+        type :  mongoose.Schema.Types.ObjectId,
         required:true,
+        ref:"Catagory"
     },
     StockQuantity:{
         type :Number,

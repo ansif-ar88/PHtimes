@@ -36,7 +36,7 @@ const loadCart = async (req, res) => {
 
         const Total = total.length > 0 ? total[0].total : 0;
         
-        const totalAmount = Total + 80;
+        const totalAmount = Total;
         const userId = userName._id;
         
         res.render("cart", {
