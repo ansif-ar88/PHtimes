@@ -14,6 +14,7 @@ const adminController = require("../controllers/admincontroller");
 const productController = require("../controllers/productcontroller")
 const categoryController = require('../controllers/categorycontroller')
 const orderController = require('../controllers/ordercontroller.js')
+const offerController = require('../controllers/offercontroller.js')
 
 
 
@@ -49,9 +50,9 @@ adminRoute.post('/editCategory', Auth.isLogin, categoryController.saveCategory);
 
 adminRoute.get("/orders",Auth.isLogin,orderController.loadOrderAdmin)
 adminRoute.get("/vieworder/:id",Auth.isLogin, orderController.loadViewSingleAdmin)
-
 adminRoute.post("/updateStatus",Auth.isLogin,orderController.changeStatus)
 
+adminRoute.get("/coupons",Auth.isLogin,offerController.loadCoupon)
 
 adminRoute.use(errorHandler)
 

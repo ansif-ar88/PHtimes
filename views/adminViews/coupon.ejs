@@ -1,0 +1,65 @@
+<%- include('../layouts/adminLayouts/header.ejs') %>
+<%- include('../layouts/adminLayouts/sidebar.ejs') %>
+<%- include('../layouts/adminLayouts/navbar.ejs') %>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+
+
+<div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="table-responsive">
+                        <h1>coupon</h1>
+                        <!-- Button trigger modal -->
+                        <div class="d-flex justify-content-end">
+<button type="button" class="btn btn-outline-primary " data-bs-toggle="modal" data-bs-target="#addCouponModal">
+    ADD COUPON
+  </button>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">ADD COUPON</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form class="forms-sample">
+                <div class="form-group">
+                  <label for="exampleInputUsername1">Coupon Name</label>
+                  <input type="text" class="form-control"  placeholder="Coupon Name" name="couponName">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Coupon Code</label>
+                  <input type="text" class="form-control"  placeholder="Coupon Code" name="couponCode">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">Discount Percentage</label>
+                  <input type="text" class="form-control"  placeholder="Discount Percentage" name="discountPercentage">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputConfirmPassword1">Start Date</label>
+                  <input type="date" class="form-control" name="startDate" >
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputConfirmPassword1">Expiry Date</label>
+                  <input type="date" class="form-control" name="expDate">
+                </div>
+               
+                <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                <button class="btn btn-dark">Cancel</button>
+              </form>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+</div>
+</div>
+<%- include('../layouts/adminLayouts/footer.ejs') %>

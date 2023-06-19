@@ -143,6 +143,8 @@
                 </div><!-- End .checkout -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
+		
+		
 		<script>
 			function deleteAddress(addressId) {
 				
@@ -216,7 +218,17 @@ $("#checkoutForm").submit((e) => {
                       window.location.href = "/shop";
                   }
               });
-		}else{
+		}else if(response.walletFailed == true){
+			swal.fire({
+                  positon: 'center',
+                  icon: "error",
+                  title: 'Insufficient Balance In Your Wallet',
+                  showConfirmButton: false,
+                  showCancelButton: false,
+                  timer:1500
+              })
+		}
+		else{
 			razorpayPayment(response.order);
 		}
 	}

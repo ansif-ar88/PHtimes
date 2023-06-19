@@ -65,6 +65,8 @@ userRoute.get('/checkout',Auth.isLogin,orderController.loadChekout)
 // userRoute.get('/checkout',Auth.isLogin,orderController.loadEmptyCheckout)
 userRoute.post('/verifyPayment',orderController.verifyPayment)
 userRoute.post('/placeOrder',orderController.placeOrder);
+userRoute.post('/returnOrder',orderController.returnOrder);
+userRoute.post('/returnConfirm',orderController.confirmReturn);
 
 
 userRoute.get("/orders",Auth.isLogin,orderController.loadOrderUser)

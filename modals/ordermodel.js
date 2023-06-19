@@ -41,7 +41,15 @@ products: [{
     status:{
         type:String,
         default:"placed"
-    }
+    },
+    cancelReason:{
+        type:String,
+        
+    },
+    returnReason:{
+        type:String,
+        
+    },
 
 }],
 totalAmount:{
@@ -58,11 +66,7 @@ orderWallet:{
     type:Number
 },
 },
-// {timestamps:true}
 )
 
 const ordermodel = mongoose.model("order",orderSchema);
 module.exports = ordermodel;
-
-
-

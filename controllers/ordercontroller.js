@@ -108,17 +108,36 @@ const placeOrder = async (req,res) => {
    
     const orderData = await order.save()
     if (orderData) {
-      for(let i= 0;i<products.length;i++){
-        const pro =products[i].productId;
-        const count = products[i].count;
-        await productmodel.findByIdAndUpdate({_id:pro},{$inc:{StockQuantity: -count}});
-
-      }
+     
       if(order.status === 'placed'){
+        for(let i= 0;i<products.length;i++){
+          const pro =products[i].productId;
+          const count = products[i].count;
+          await productmodel.findByIdAndUpdate({_id:pro},{$inc:{StockQuantity: -count}});
+  
+        }
         await cartmodel.deleteOne({userId:id})  
         res.json({codSuccess : true})
       }else{
-        
+        if(paymentMethod == 'Wallet'){
+          const walletAmount = userName.wallet
+          if(walletAmount >= Total){
+            for(let i= 0;i<products.length;i++){
+              const pro =products[i].productId;
+              const count = products[i].count;
+              await productmodel.findByIdAndUpdate({_id:pro},{$inc:{StockQuantity: -count}});     
+            }
+            await usermodel.findByIdAndUpdate({_id:id},{$inc:{wallet : -Total}})
+            await cartmodel.deleteOne({userId:id}) 
+            const orderId = order._id 
+            await ordermodel.findByIdAndUpdate({_id:orderId},{$set:{status: 'placed'}})
+            res.json({codSuccess : true})
+            
+          }else{
+            res.json({walletFailed:true})
+          
+          }
+        }else{
         const orderId = orderData._id;
         const totalAmount = orderData.totalAmount;
         var options = {
@@ -130,6 +149,7 @@ const placeOrder = async (req,res) => {
           res.json({order})
         })
       }
+    }
     } else {
       res.redirect("/checkout")
     }
@@ -148,8 +168,15 @@ const verifyPayment = async(req,res)=>{
     const hmac = crypto.createHmac('sha256',process.env.RazorpayKeySecret);
     hmac.update(details.payment.razorpay_order_id + '|' + details.payment.razorpay_payment_id);
     const hmacValue = hmac.digest('hex');
-
+    const cartData =  await cartmodel.findOne({userId:id})
+    const products = cartData.products
     if(hmacValue === details.payment.razorpay_signature){
+      for(let i= 0;i<products.length;i++){
+        const pro =products[i].productId;
+        const count = products[i].count;
+        await productmodel.findByIdAndUpdate({_id:pro},{$inc:{StockQuantity: -count}});
+
+      }
       await ordermodel.findOneAndUpdate({_id:details.order.receipt},{$set:{status:"placed"}});
       await ordermodel.findOneAndUpdate({_id:details.order.receipt},{$set:{paymentId:details.payment.razorpay_payment_id}})
       await cartmodel.deleteOne({userId:req.session.user_id})
@@ -170,6 +197,7 @@ const loadOrderUser = async(req,res) => {
       const session = req.session.user_id
       const id = req.session.user_id
       const userdata = await usermodel.findById({_id: id})
+      await ordermodel.deleteMany({status:'pending'})
       const orders = await ordermodel.find({userId:id}).populate("products.productId")
       if(orders.length > 0){
 
@@ -193,6 +221,7 @@ const loadOrderAdmin = async(req,res) => {
       const session = req.session.Auser_id
       const id = req.session.user_id
       const adminData = await usermodel.findOne({is_admin : 1})
+      await ordermodel.deleteMany({status:'pending'})
       const orders = await ordermodel.find().populate("products.productId")
 
       if(orders.length > 0){
@@ -212,7 +241,7 @@ const loadOrderAdmin = async(req,res) => {
 
 const loadViewSingleUser = async (req,res)=> {
   try {
-    const id = req.params.id
+    const id = req.params.id;
     const session =req.session.user_id
     const userdata = await usermodel.findOne({_id: session})
     const orders = await ordermodel.findOne({_id:id}).populate("products.productId")
@@ -240,7 +269,9 @@ const loadViewSingleAdmin = async (req,res)=> {
 //======================== CANCEL ORDER =====================
 const CancelOrder = async (req, res) => {
   try {
-    const id = req.body.id;
+    const id = req.body.orderid;
+    const reason = req.body.reason
+    const ordersId = req.body.ordersid;
     const Id = req.session.user_id
     const userData = await ordermodel.findById(Id)
     const orderData = await ordermodel.findOne({ userId: Id, 'products._id': id})
@@ -255,7 +286,8 @@ const CancelOrder = async (req, res) => {
       },
       {
         $set: {
-          'products.$.status': 'cancelled'
+          'products.$.status': 'cancelled',
+          'products.$.cancelReason': reason
         }
       },
       { new: true }
@@ -264,18 +296,18 @@ const CancelOrder = async (req, res) => {
 
     if (updatedOrder) {
          await productmodel.findByIdAndUpdate({_id:proId},{$inc:{StockQuantity:proCount}})
-      if(orderData.paymentMethod === 'onlinePayment'){
+      if(orderData.paymentMethod === 'onlinePayment' || orderData.paymentMethod === 'Wallet'){
          await usermodel.findByIdAndUpdate({_id:Id},{$inc:{wallet:cancelledAmount}})
         //  await ordermodel.findByIdAndUpdate({_id:Id},{$inc:{totalAmount:-cancelledAmount}})
 
         await ordermodel.findByIdAndUpdate(Id, { $inc: { totalAmount: -cancelledAmount } });
 
-         res.json({ success: true });
+         res.redirect("/vieworder/" + ordersId)
       }else{
-         res.json({ success: true });
+        res.redirect("/vieworder/" + ordersId)
       }
     } else {
-      res.json({ success: false });
+      res.redirect("/vieworder/" + ordersId)
     }
   } catch (error) {
     console.log(error.message);
@@ -308,6 +340,60 @@ const changeStatus = async(req,res) =>{
     console.log(error.message);
   }
 }
+
+// ================== RETURN ORDER ==================
+
+const returnOrder = async(req,res) =>{
+  try {
+    const ordersId = req.body.ordersid;
+    const Id = req.session.user_id
+    const id = req.body.orderid;
+    const reason = req.body.reason
+    const userData = await ordermodel.findById(Id)
+    const orderData = await ordermodel.findOne({ userId: Id, 'products._id': id})
+    const product = orderData.products.find((Product) => Product._id.toString() === id);
+    const returnAmount = product.totalPrice
+    const proCount = product.count
+    const proId = product.productId 
+    
+    const updatedOrder = await ordermodel.findOneAndUpdate(
+      {
+        userId: Id,
+        'products._id': id
+      },
+      {
+        $set: {
+          'products.$.status': 'Product Returned',
+          'products.$.returnReason': reason
+        }
+      },
+      { new: true }
+    );
+
+    if(updatedOrder){
+
+      await productmodel.findByIdAndUpdate({_id:proId},{$inc:{StockQuantity:proCount}})
+      await usermodel.findByIdAndUpdate({_id:Id},{$inc:{wallet:returnAmount}})
+      res.redirect("/vieworder/" + ordersId)
+    }else{
+       res.redirect("/vieworder/" + ordersId)
+    }
+   
+
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+// ================== COLLECT RETURN ORDER ==================
+
+const confirmReturn = async(req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+}
   module.exports = {
     loadChekout,
     placeOrder,
@@ -317,7 +403,9 @@ const changeStatus = async(req,res) =>{
     loadOrderAdmin,
     loadViewSingleAdmin,
     CancelOrder,
-    changeStatus
+    changeStatus,
+    returnOrder,
+    confirmReturn
 
     // loadEmptyCheckout
 
