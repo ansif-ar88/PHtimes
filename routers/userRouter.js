@@ -14,6 +14,7 @@ const cartController = require ('../controllers/cartcontroller.js')
 const addressController = require('../controllers/addresscontroller')
 const orderController =  require ('../controllers/ordercontroller')
 const wishlistController = require('../controllers/wishlistcontroller')
+const offerController = require('../controllers/offercontroller')
 
 
 
@@ -78,7 +79,7 @@ userRoute.post('/addtoWishlist',Auth.isLogin,wishlistController.addToWishlist);
 userRoute.post('/addtocartfromwish',Auth.isLogin,wishlistController.addToCartFromWish);
 userRoute.post('/deletewishlist',Auth.isLogin,wishlistController.deleteWishlist);
 
-
+userRoute.post('/applyCoupon',offerController.applyCoupon)
 
 
 

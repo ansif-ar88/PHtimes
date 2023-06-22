@@ -1,6 +1,7 @@
 const session = require("express-session")
 const usermodel = require('../modals/usermodal')
 const addressmodel = require ('../modals/addressmodel')
+const couponmodel =require('../modals/couponmodel')
 const cartmodel = require('../modals/cartmodel')
 const ordermodel = require('../modals/ordermodel')
 const { now } = require("mongoose")
@@ -15,8 +16,12 @@ const crypto = require("crypto")
 const loadChekout = async(req,res)=>{
     try {
       const session = req.session.user_id
+      const couponData = await couponmodel.find({})
       const userData = await usermodel.findOne ({_id:req.session.user_id});
       const addressData = await addressmodel.findOne({userId:req.session.user_id});
+      const currentDate = new Date();
+
+      const validCoupons = couponData.filter(item => item.expiryDate > currentDate);          
       const total = await cartmodel.aggregate([
         { $match: { userId: req.session.user_id } },
         { $unwind: "$products" },
@@ -34,17 +39,17 @@ const loadChekout = async(req,res)=>{
               const address = addressData.addresses
               const Total = total.length > 0 ? total[0].total : 0; 
               const totalAmount = Total;
-              res.render('checkOut',{session,Total,address:address,totalAmount,userData:userData})
+              res.render('checkOut',{session,Total,address:address,totalAmount,userData:userData,coupons:validCoupons})
             }
             else{
                 const Total = total.length > 0 ? total[0].total : 0; 
                 const totalAmount = Total;
-              res.render('emptyCheckout',{session,Total,totalAmount,userData:userData,message:"Add your delivery address"});
+              res.render('emptyCheckout',{session,Total,totalAmount,userData:userData,coupons:validCoupons,message:"Add your delivery address"});
             }
           }else{
             const Total = total.length > 0 ? total[0].total : 0; 
             const totalAmount = Total;
-            res.render('emptyCheckout',{session,Total,totalAmount,userData:userData,message:"Add your delivery address"});
+            res.render('emptyCheckout',{session,Total,totalAmount,userData:userData,coupons:validCoupons,message:"Add your delivery address"});
           }
         }else{
           res.redirect('/')
@@ -55,23 +60,7 @@ const loadChekout = async(req,res)=>{
   }
 
 
-//================== LOLAD EMPTY CHECKOUT =====================
 
-// const loadEmptyCheckout = async (req,res) =>{
-//     try {
-//         if(req.session.user_id){
-//             const session = req.session.user_id
-//             const id = req.session.user_id
-//             const userdata = await usermodal.findById({_id: req.session.user_id})
-//             res.render("emptyCheckout", { userData: userdata,session });
-//           }else{
-//             const session = null
-//             res.redirect("/home",{message:"please login"})
-//           }
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// }
 
 var instance = new razorpay({
   key_id: process.env.RazorpayKeyId,
@@ -163,7 +152,7 @@ const placeOrder = async (req,res) => {
 const verifyPayment = async(req,res)=>{
   try {
     const details = req.body
-    
+    const id = req.session.user_id
     const crypto = require('crypto');
     const hmac = crypto.createHmac('sha256',process.env.RazorpayKeySecret);
     hmac.update(details.payment.razorpay_order_id + '|' + details.payment.razorpay_payment_id);
@@ -177,6 +166,7 @@ const verifyPayment = async(req,res)=>{
         await productmodel.findByIdAndUpdate({_id:pro},{$inc:{StockQuantity: -count}});
 
       }
+
       await ordermodel.findOneAndUpdate({_id:details.order.receipt},{$set:{status:"placed"}});
       await ordermodel.findOneAndUpdate({_id:details.order.receipt},{$set:{paymentId:details.payment.razorpay_payment_id}})
       await cartmodel.deleteOne({userId:req.session.user_id})

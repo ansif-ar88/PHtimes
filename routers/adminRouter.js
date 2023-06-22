@@ -25,7 +25,11 @@ adminRoute.get('/logout',Auth.isLogin,adminController.adminLogout)
 
 adminRoute.get('/userList',Auth.isLogin,adminController.userList)
 adminRoute.get('/block-user',Auth.isLogin,adminController.block);
-adminRoute.get('/unblock-user',Auth.isLogin,adminController.unblock); 
+adminRoute.get('/unblock-user',Auth.isLogin,adminController.unblock);
+
+adminRoute.get('/salesReport',Auth.isLogin,adminController.loadSalesReport); 
+
+
 
 adminRoute.get('/productList',Auth.isLogin,productController.productList)
 adminRoute.get('/categoryList',Auth.isLogin,categoryController.categoryList)
@@ -53,6 +57,9 @@ adminRoute.get("/vieworder/:id",Auth.isLogin, orderController.loadViewSingleAdmi
 adminRoute.post("/updateStatus",Auth.isLogin,orderController.changeStatus)
 
 adminRoute.get("/coupons",Auth.isLogin,offerController.loadCoupon)
+adminRoute.post("/addCoupon",Auth.isLogin,offerController.insertCoupon) 
+adminRoute.post("/editCoupon/:id",Auth.isLogin,offerController.editCoupon) 
+adminRoute.post("/deleteCoupon",Auth.isLogin,offerController.deleteCoupon) 
 
 adminRoute.use(errorHandler)
 

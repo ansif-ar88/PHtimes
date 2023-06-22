@@ -17,6 +17,10 @@ const couponSchema = new mongoose.Schema({
         type:Number,
         required:true,
     },
+    criteria:{
+        type:String,
+        required:true,
+    },
     startDate:{
         type:Date,
         required:true,

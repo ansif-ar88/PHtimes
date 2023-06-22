@@ -17,12 +17,80 @@
             <div class="page-content">
             	<div class="checkout">
 	                <div class="container">
+
+						<div class="checkout-discount">
+            				
+        						
+							
+							<a   data-bs-toggle="modal" class="m-2" data-bs-target="#addCouponModal">View Avilable Coupons</a>
+
+						 <!-- Modal -->
+  <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">COUPONS</h5>
+          
+        </div>
+        <div class="modal-body">
+            
+               <% if(coupons .length > 0){
+				coupons.forEach((coupon) => { %>
+
+				
+			
+			<div class="container my-5" >
+				<div class="d-flex coulmn">
+					<div class="col-lg-6">
+						<div class="coupon p-3 bg-white">
+							<div class="row no-gutters">
+								<div class="col-lg-4 border-right d-flex flex-column justify-content-center">
+									<div class="d-flex flex-column align-items-center ">
+										<img src="/userAssets/images/demos/demo-7/userlogo.jpg" style="width: 100px;">
+										<!-- <span class="d-block">PH TIMES</span> -->
+										<!-- <span class="text-black-50">Shoes</span> -->
+									</div>
+								</div>
+								<div class="col-lg-8">
+									<div>
+										<div class="d-flex flex-row justify-content-end off">
+											<h2><%= coupon.discountPercentage %>%</h2>
+											<span>OFF</span>
+										</div>
+										<div class="d-flex flex-row justify-content-between off px-3 p-2">
+											<span>Promo code:</span>
+											<a onclick="copyCode('<%= coupon.couponCode %>')"><span class="border border-success px-3 rounded code"><%= coupon.couponCode %> | COPY</span></a>
+										</div>
+										<div class="d-flex flex-row justify-content-between off px-3 p-2">
+											<span>Purchase Above</span>
+											<span class=" px-3"><%= coupon.criteria %> Rupees</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<% })
+			} %>
+
+                <button type="button" class="btn btn-dark  m-5	" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+        </div> 
+      </div>
+    </div>
+  </div>
+</div><!-- End .checkout-discount -->
+
             			<div class="checkout-discount">
             				<form action="" >
-        						<input type="text" class="form-control" required id="checkout-discount-input">
-            					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
-            				</form>
+        						<input type="text" class="form-control" placeholder="Click here to enter your code" required id="code">
+            				<a onclick="applycoupon($('#code').val())" type="Submit" class="btn btn-outline-danger">APPLY COUPON</a>
+							</form>
             			</div><!-- End .checkout-discount -->
+            			
             			<form action="" id="checkoutForm">
 		                	<div class="row">
 		                		<div class="col-lg-9">
@@ -90,7 +158,11 @@
 		                						</tr><!-- End .summary-subtotal -->
 		                						<tr>
 		                							<td>Shipping:</td>
-		                							<td>₹ 80.00</td>
+		                							<td>₹ 00.00</td>
+		                						</tr>
+		                						<tr>
+		                							<td >Discount:</td>
+		                							<td>₹ <span id="discount">.00</span></td>
 		                						</tr>
 		                						<tr class="summary-total">
 		                							<td>Total:</td>
@@ -142,8 +214,19 @@
 	                </div><!-- End .container -->
                 </div><!-- End .checkout -->
             </div><!-- End .page-content -->
+
+			
         </main><!-- End .main -->
-		
+		<style>
+			
+.coupon{
+	border-radius: 12px;
+	box-shadow: 5px 8px 10px #000000c0;
+	max-width: 535px;
+}
+
+.code:hover{background: green;color: #fff;cursor: pointer}
+		</style>
 		
 		<script>
 			function deleteAddress(addressId) {
@@ -235,7 +318,11 @@ $("#checkoutForm").submit((e) => {
 
 	})
 })
+
+//RAZORPAY
+
 function razorpayPayment(order){
+	
 	var options = {
     "key": "rzp_test_W1c7v7Q09L27uH", 
     "amount": order.amount, 
@@ -262,6 +349,8 @@ function razorpayPayment(order){
 var rzp1 = new Razorpay(options);
     rzp1.open(); 
 }
+
+// VERIFY RAZORPAY
 
 function verifyPayment(payment,order){
 	const amount2 =document.getElementById("gt4").innerHTML;
@@ -301,5 +390,70 @@ function verifyPayment(payment,order){
 		}
 	})
 }
+
+// COPY COUPON CODE
+
+function copyCode(code) {
+          navigator.clipboard.writeText(code)
+          .then(function() {
+             alert('Coupon code copied to clipboard!');
+          })
+         .catch(function() {
+             alert('Failed to copy coupon code.');
+      });
+      }
+
+// COUPON APPLY
+
+function applycoupon(code){
+		
+      event.preventDefault();
+    const amount = document.getElementById('gt4').innerHTML;
+    $.ajax({
+      url:"/applyCoupon",
+      data:{  
+        code:code,
+        amount:amount
+      },
+      method:"post",
+      success:(response)=>{
+        if(response.user){
+          Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'This coupon already used!'
+              })
+        }else if(response.date){
+          console.log("coupon date expired");
+          Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'date expired!!!'
+              })
+        }else if(response.amountOkey){
+          document.getElementById('discount').innerHTML = response.disAmount
+          document.getElementById('gt4').innerHTML = response.disTotal
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Discount redeemed',
+            showConfirmButton: false,
+            timer: 1500
+          })
+        }else if(response.invalid){
+          Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Invalid Coupon!!!'
+              })
+        }else if(response.notEligible){
+			Swal.fire({
+				icon : 'error',
+				title : 'You Are Not Eligible For This Coupon' 
+			})
+		}
+      }
+    })
+  }
 		</script>
         <%- include('../layouts/userLayouts/footer.ejs') %>
