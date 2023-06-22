@@ -22,6 +22,10 @@ userRoute.get("/signup",Auth.isLogout, userController.loadRegister);
 userRoute.post("/signup", userController.insertUser);
 userRoute.get("/otp", userController.loadVerification);
 userRoute.post("/otp", userController.verifyEmail);
+userRoute.get("/forgotPassword", userController.forgotPassword);
+userRoute.post('/forgotPassword',userController.forgotVerifyMail)
+userRoute.post('/verifyForgot',userController.verifyForgotMail)
+userRoute.post('/resubmitPassword',userController.resubmitPassword)
 
 userRoute.get("/",userController.loadHome)
 

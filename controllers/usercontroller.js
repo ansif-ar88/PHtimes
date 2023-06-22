@@ -367,6 +367,97 @@ const priceSort = async(req,res) => {
   
 
 }
+//======================== LOAD FORGOT PASSWORD ===================
+const forgotPassword = async (req,res) =>{
+  try {
+    res.render("forgotPassword")
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+//======================== SEND OTP FORGOT PASSWORD ===================
+
+let otpv;
+let emailv;
+const forgotVerifyMail = async (req, res) => {
+  try {
+    const email = req.body.email;
+    const userData = await usermodal.findOne({ email: email });
+    const name = userData.name;
+    console.log(userData);
+    if (userData) {
+      randomnumber = Math.floor(Math.random() * 9000) + 1000;
+      otpv = randomnumber;
+      emailv = email; 
+      sendVerifyMail(name, email, randomnumber);
+      res.render("forgotPassword", { message: "please check your email" });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+//======================== VERIFY OTP ===================
+
+const verifyForgotMail = async (req, res) => {
+  try {
+    const otp = req.body.otp;
+    console.log(otp);
+    if (otp == otpv) {
+      res.render("resubmitPassword");
+    } else {
+      res.render("forgotPassword", { message: "otp is incorrect" });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+//======================== RESUBMIT PASSWORD ===================
+
+const resubmitPassword = async (req, res) => {
+  try {
+    //re confirmation password
+
+    if (req.body.password != req.body.password2) {
+      res.render("resubmitPassword", {
+        message: "Password Not Matching",
+      });
+      return;
+    }
+
+
+
+    const passwordValidate = await schema.validate(req.body.password);
+
+    if (!passwordValidate) {
+      res.render("resubmit-password", {
+        message: "Password Must Be Strong",
+      });
+      return;
+    }
+
+    const spassword = await securePassword(req.body.password);
+
+    const changePassword = await usermodal.findOneAndUpdate(
+      { email: emailv },
+      { $set: { password: spassword } }
+    );
+
+    if (changePassword) {
+      res.render("resubmitPassword", {
+        message: "Password successfully changed",
+      });
+    } else {
+      res.render("resubmitPassword", {
+        message: "Please try again!!",
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 module.exports = {
   loadHome,
@@ -384,6 +475,10 @@ module.exports = {
   filterByCategory,
   searchProduct,
   priceSort,
+  forgotPassword,
+  forgotVerifyMail,
+  verifyForgotMail,
+  resubmitPassword
 
 
 
