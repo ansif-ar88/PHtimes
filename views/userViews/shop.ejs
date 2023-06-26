@@ -83,14 +83,24 @@
 												
 												</div><!-- End .product-action -->
                                             </figure><!-- End .product-media -->
+											<% if(productData[i].offPercentage > 0){ %>
+												<span class="product-label label-new"><%= productData[i].offPercentage %> % off</span>
+												<% }else{%>
 
+													<%	} %>
+											
                                             <div class="product-body">
                                                 <div class="product-cat">
                                                     <a href="#"><%=productData[i].idealfor%></a>
                                                 </div><!-- End .product-cat -->
                                                 <h3 class="product-title"><a href="/showProduct/<%=productData[i]._id%>"><%=productData[i].productName%></a></h3><!-- End .product-title -->
                                                 <div class="product-price">
-                                                    ₹ <%=productData[i].price%>.00
+												<%	if(productData[i].offPrice > 0){ %>
+														<del class="text-danger">₹ <%= productData[i].price %>.00</del> &nbsp; &nbsp; ₹ <%= productData[i].offPrice %>.00
+														<% }else{ %>
+														₹ <%=productData[i].price%>.00
+														<%	} %>
+                                                    
                                                 </div><!-- End .product-price -->
                                                
 

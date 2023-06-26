@@ -1,4 +1,6 @@
 const couponmodel = require("../modals/couponmodel")
+const usermodel = require ('../modals/usermodal')
+const productmodel = require('../modals/productmodel')
 
 //============= LOAD COUPON PAGE ===========
 
@@ -115,11 +117,38 @@ const applyCoupon = async(req,res)=>{
         console.log(error.message);
     }
 }
+//=============== ADD OFFER ==============
+
+const addOffer = async(req,res) =>{
+    try {
+        const id = req.body.id
+        const offName = req.body.offName
+        const offPercentage = req.body.offPercentage
+        const productData = await productmodel.findById(id)
+        const price = productData.price
+        const offerAmt = Math.round(price * offPercentage/100)
+        const offerPrice = price - offerAmt
+        const offAdd = await productmodel.findByIdAndUpdate(id,{$set:{
+            offName: offName,
+            offPercentage:offPercentage,
+            offPrice:offerPrice
+        }})
+        if(offAdd){
+            res.redirect("/admin/productList")
+        }else{
+            res.redirect("/admin/productList")
+        }  
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 module.exports = {
     loadCoupon,
     insertCoupon,
     editCoupon,
     deleteCoupon,
-    applyCoupon
+    applyCoupon,
+    addOffer
 }

@@ -12,6 +12,18 @@ const mongoose = require ('mongoose');
        type : Number,
        required:true
     },
+    offName : {
+       type : String,
+       
+    },
+    offPercentage : {
+       type : Number,
+       default:0
+    },
+    offPrice : {
+       type : Number,
+       default:0
+    },
     image:{
         type : Array,
         required: true

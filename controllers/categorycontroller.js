@@ -56,30 +56,21 @@ const insertCategory = async (req,res) =>{
 
 const saveCategory = async(req,res) =>{
     try {
-        
+        const id = req.params.id
         const name = req.body.categoryName;
-        const catData = await category.findOneAndUpdate({_id:req.query.id}  ,{$set:{categoryName:name}});
+        
+
+        const catData = await category.findOneAndUpdate({_id:id}  ,{$set:{categoryName:name}});
         
         if(catData){
-            res.redirect('categoryList')
+            res.redirect('/admin/categoryList')
         }
     } catch (error) {
         console.log(error.message);
     }
 }
-//==================  EDIT CATEGORY ====================
-const  editCategory= async (req,res)=>{
-    try {
-        const id = req.query.id;
-       const catDATA = await category.findById({_id:id});
-       const adminData = await usermodal.findById({ _id: req.session.Auser_id });
 
-       res.render('editCategory',{Category:catDATA, admin : adminData})
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
+//============== LIST AND UNLIST CATEGORY ==============
 
 const unlistCategory = async (req, res) => {
     try {
@@ -107,7 +98,6 @@ module.exports = {
     categoryList,
     insertCategory,
     saveCategory,
-    editCategory,
     listCategory,
     unlistCategory,
     

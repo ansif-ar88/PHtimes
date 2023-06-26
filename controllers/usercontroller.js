@@ -7,6 +7,7 @@ const session = require("express-session")
 const nodemailer = require("nodemailer")
 const cartmodel = require('../modals/cartmodel')
 const passwordValidator = require('password-validator');
+const bannermodel = require("../modals/bannermodel");
 
 var schema = new passwordValidator();
 
@@ -192,14 +193,16 @@ const loadHome = async (req, res,next) => {
   try {
     const id = req.session.user_id
     const session = id
+    const productdata = await productmodel.find()
+    const banners = await bannermodel.find()
+
     if(id){
-      const productdata = await productmodel.find()
+      
       const userData = await usermodal.findById({_id: id})
-      res.render("home",{productData:productdata,userData:userData,session})
+      res.render("home",{productData:productdata,userData:userData,session,banners})
     }else{
       const session = null
-      const productdata = await productmodel.find()
-      res.render("home",{productData:productdata,session})
+      res.render("home",{productData:productdata,session,banners})
     }
   } catch (error) {
     console.log(error.message);
@@ -478,7 +481,7 @@ module.exports = {
   forgotPassword,
   forgotVerifyMail,
   verifyForgotMail,
-  resubmitPassword
+  resubmitPassword,
 
 
 

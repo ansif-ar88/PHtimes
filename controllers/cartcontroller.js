@@ -108,7 +108,6 @@ const addToCart = async (req, res) => {
       },
       { upsert: true, new: true }
     );
-    // console.log(userName);
 
     const updatedProduct = cartData.products.find((product) => product.productId === productId);
     const updatedQuantity = updatedProduct ? updatedProduct.count : 0;
@@ -122,21 +121,29 @@ const addToCart = async (req, res) => {
 
     const cartProduct = cartData.products.find((product) => product.productId === productId);
 
+    let newPrice;
+
+if(productData.offPrice > 0){
+  newPrice = productData.offPrice
+}else{
+  newPrice = productData.price
+}
     if (cartProduct) {
+
       await cartmodel.updateOne(
         { userId: userId, "products.productId": productId },
         {
           $inc: {
             "products.$.count": 1,
-            "products.$.totalPrice": productData.price,
+            "products.$.totalPrice": newPrice,
           },
         }
       );
     } else {
       cartData.products.push({
         productId: productId,
-        productPrice: productData.price,
-        totalPrice: productData.price,
+        productPrice : newPrice,
+        totalPrice : newPrice,
       });
       await cartData.save();
     }
@@ -187,8 +194,15 @@ const changeProductCount = async (req, res) => {
     const updateCartData = await cartmodel.findOne({ userId: userData });
     const updateProduct = updateCartData.products.find((product) => product.productId === proId);
     const updateQuantity = updateProduct.count;
-    
-    const price = updateQuantity * productData.price;
+
+    let newPrice;
+
+    if(productData.offPrice > 0){
+      newPrice = productData.offPrice
+    }else{
+      newPrice = productData.price
+    }
+    const price = updateQuantity *newPrice;
 
     await cartmodel.updateOne(
       { userId: userData, "products.productId": proId },

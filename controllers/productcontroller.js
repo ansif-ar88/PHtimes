@@ -10,9 +10,9 @@ const path = require("path")
 const productList = async (req,res) => {
     try {
         const productData = await productmodel.find({Status:true}).populate('category')
-        console.log(productData);
+        const categoryData = await categorymodel.find({is_deleted:false})
         const adminData = await usermodal.findById({ _id: req.session.Auser_id });
-        res.render("productList",{products : productData,admin:adminData});
+        res.render("productList",{products : productData,admin:adminData,category: categoryData});
         // res.redirect('/productList')
 
     } catch (error) {
@@ -21,17 +21,17 @@ const productList = async (req,res) => {
 }
 
 //============= LOAD ADD PRODUCT PAGE ===================
-const AddProducts = async (req,res)=>{
-    try {
-        const productData = await productmodel.find({});
-        const categoryData = await categorymodel.find({is_deleted:false})
-        const adminData = await usermodal.findById({ _id: req.session.Auser_id });
+// const AddProducts = async (req,res)=>{
+//     try {
+//         const productData = await productmodel.find({});
+//         const categoryData = await categorymodel.find({is_deleted:false})
+//         const adminData = await usermodal.findById({ _id: req.session.Auser_id });
 
-        res.render('addProduct',{category: categoryData,products : productData,admin : adminData})
-    } catch (error) {
-     console.log(error.message);   
-    }
- }
+//         res.render('addProduct',{category: categoryData,products : productData,admin : adminData})
+//     } catch (error) {
+//      console.log(error.message);   
+//     }
+//  }
 
 //============= INSERT PRODUCT ===================
 
@@ -43,7 +43,6 @@ const insertProduct = async(req,res) => {
             image[i] = req.files[i].filename;
         }
     }
-        // const category = await categorymodel.findById(req.body.id);
         const category = await categorymodel.findById(req.body.category);
         const new_product = new productmodel({
             productName : req.body.productName,
@@ -59,9 +58,9 @@ const insertProduct = async(req,res) => {
         const productData = await new_product.save();
         if(productData){
             // const categoryData = await categorymodel.find({})
-           return res.redirect('/admin/addProduct')
+           return res.redirect('/admin/productList')
         }else{
-            return res.redirect('/admin/addProduct')
+            return res.redirect('/admin/productList')
         }
        } catch (error) {
         console.log(error.message);
@@ -194,7 +193,7 @@ const updateimage = async (req, res) => {
 module.exports = {
     productList,
     insertProduct,
-    AddProducts,
+    // AddProducts,
     editProduct,
     editUpdateProduct,
     deleteimage,
