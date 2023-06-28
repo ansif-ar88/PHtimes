@@ -10,7 +10,19 @@
         <div class="card-body">
             <div class="d-flex justify-content-between">
                 <h4 >SALES REPORT</h4>
-                <!-- <a href="" type="button" class="btn btn-outline-primary">PRINT REPORT</a> -->
+                <div class="d-flex justify-content-end">
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Sort By
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item" href="/admin/salesSort/<%= 1 %>">Daily</a>
+                      <a class="dropdown-item" href="/admin/salesSort/<%= 7 %>">Weekly</a>
+                      <a class="dropdown-item" href="/admin/salesSort/<%= 30 %>">Monthly</a>
+                      <a class="dropdown-item" href="/admin/salesReport">All Reports</a>
+                    </div>
+                  </div>
+                </div>
                 
             </div>
         </div>
@@ -39,7 +51,7 @@
                
                     <tr>
                         <td><%= i+1 %></td>
-                        <td><%= item.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
+                        <td><%= item.products.deliveryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
                         <td><%= item.products.productDetails.productName %></td>
                         <td><%= item.products.count %></td>
                         <td><%= item.products.productPrice %></td>

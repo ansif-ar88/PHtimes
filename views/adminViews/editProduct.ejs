@@ -5,8 +5,8 @@
       <!-- partial -->
         <div class="main-panel">
             <div class="content-wrapper">
-              <div class="row">
-                <div class="col-12 grid-margin stretch-card">
+              <div class="row d-flex justify-content-center">
+                <div class="col-9 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
                       <h4 class="card-title">EDIT PRODUCT</h4>
@@ -14,7 +14,7 @@
                       <form class="form-sample" action="" method="post" enctype="multipart/form-data" >
                         
                         <div class="row">
-                          <div class="col-md-6">
+                          <div class="col-md-12">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Product Name</label>
                               <div class="col-sm-9">
@@ -25,7 +25,7 @@
                           
                         </div>
                         <div class="row">
-                          <div class="col-md-6">
+                          <div class="col-md-12">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">ideal for</label>
                               <div class="col-sm-9">
@@ -36,7 +36,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="col-md-6">
+                          <div class="col-md-12">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Price</label>
                               <div class="col-sm-9">
@@ -46,7 +46,7 @@
                           </div>
                         </div>
                         <div class="row">
-                          <div class="col-md-6">
+                          <div class="col-md-12">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Category</label>
                               <div class="col-sm-9">
@@ -88,7 +88,7 @@
                         </div>
                        
                         <div class="row">
-                          <div class="col-md-6">
+                          <div class="col-md-12">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">stock Quantity</label>
                               <div class="col-sm-9">
@@ -96,19 +96,31 @@
                               </div>
                             </div>
                           </div>
-                          <div class="col-md-6">
+                          <div class="col-md-12">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Description</label>
-                              <div class="col-sm-9">
-                                <!-- <input type="text" class="form-control" name="description"/> -->
-                                <input class="form-control" name="description" value="<%= products.description %>">
-                                
+                              <div class="col-sm-9">                               
+                                <input class="form-control" name="description" value="<%= products.description %>"> 
                               </div>
-                              
-                              
                             </div>
-                            
                           </div>
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">offer Name</label>
+                              <div class="col-sm-9">                               
+                                <input class="form-control" name="offName" value="<%= products.offName %>"> 
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">offer % </label>
+                              <div class="col-sm-9">                               
+                                <input class="form-control" name="offPercentage" value="<%= products.offPercentage %>"> 
+                              </div>
+                            </div>
+                          </div>
+
                         </div><br>
                         <button type="submit" class="btn btn-primary mr-2">Submit</button>
                              <a type="button" class="btn btn-dark" href="/admin/productList">Cancel</a>
@@ -116,13 +128,6 @@
                     </div>
                   </div>
                   </div>
-
-
-
-
-
-
-
               </div>
             </div>
             </div>

@@ -22,7 +22,7 @@ const mongoose = require ('mongoose');
     },
     offPrice : {
        type : Number,
-       default:0
+    //    default:0
     },
     image:{
         type : Array,

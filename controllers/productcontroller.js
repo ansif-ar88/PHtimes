@@ -20,19 +20,6 @@ const productList = async (req,res) => {
     }
 }
 
-//============= LOAD ADD PRODUCT PAGE ===================
-// const AddProducts = async (req,res)=>{
-//     try {
-//         const productData = await productmodel.find({});
-//         const categoryData = await categorymodel.find({is_deleted:false})
-//         const adminData = await usermodal.findById({ _id: req.session.Auser_id });
-
-//         res.render('addProduct',{category: categoryData,products : productData,admin : adminData})
-//     } catch (error) {
-//      console.log(error.message);   
-//     }
-//  }
-
 //============= INSERT PRODUCT ===================
 
 const insertProduct = async(req,res) => {
@@ -73,7 +60,7 @@ const editProduct = async(req,res) => {
        
        const id = req.params.id
        const productData = await productmodel.findOne({_id:id}).populate('category')
-       const catData = await categorymodel.find()
+       const catData = await categorymodel.find({is_deleted : false})
        const adminData = await usermodal.findById({_id:req.session.Auser_id})
        res.render("editProduct",{admin:adminData,category:catData,products:productData})
     } catch (error) {
@@ -86,8 +73,6 @@ const editUpdateProduct = async (req,res) =>{
     if(req.body.productName.trim()=== "" || req.body.category.trim() === "" || req.body.description.trim() === "" || req.body.StockQuantity.trim() === "" || req.body.price.trim() === "" ) {
         const id = req.params.id
         const productData = await productmodel.findOne({_id:id}).populate('category')
-        console.log(productData);
-        // const categoryData =categorymodel.find()
         const categoryData = await categorymodel.find({})
         const adminData = await usermodal.findById({_id:req.session.Auser_id})
         res.render('editProduct',{admin:adminData,products: productData,category:categoryData, message:"All fields required",})
@@ -97,7 +82,10 @@ const editUpdateProduct = async (req,res) =>{
             for(file of req.files){
                 arrayimg.push(file.filename)
             }
-            
+            const price = req.body.price
+            const ooffp = req.body.offPercentage
+            const offAmt = Math.round(price * ooffp/100)
+            const offprice = price - offAmt
                 
                 const id = req.params.id
                 // console.log("data : "+req.body.productName);
@@ -107,7 +95,10 @@ const editUpdateProduct = async (req,res) =>{
                     brand:req.body.brand,
                     StockQuantity:req.body.StockQuantity,
                     price:req.body.price,
-                    description:req.body.description
+                    description:req.body.description,
+                    offName:req.body.offName,
+                    offPercentage : req.body.offPercentage,
+                    offPrice : offprice
                 }})
                 res.redirect('/admin/productList')
             // }
@@ -120,15 +111,14 @@ const editUpdateProduct = async (req,res) =>{
 //===================== DELETE IMAGE ==============
 
 const deleteimage = async(req,res)=>{
-    try{
+     try{
       const imgid =req.params.imgid
-      console.log(imgid);
       const prodid =req.params.prodid
       
       fs.unlink(path.join(__dirname,"../public/adminAssets/adminImages/",imgid),()=>{})
-      const productimg  = await  productmodel.updateOne({_id:prodid},{$pull:{image:imgid}})
+      const productimg  = await  productmodel.findByIdAndUpdate(prodid,{$pull:{image:imgid}})
   
-      res.redirect('/admin/editProduct/'+prodid)
+      res.redirect(`/admin/editProduct/${prodid}`)
   
   
   
@@ -193,7 +183,6 @@ const updateimage = async (req, res) => {
 module.exports = {
     productList,
     insertProduct,
-    // AddProducts,
     editProduct,
     editUpdateProduct,
     deleteimage,

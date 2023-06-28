@@ -18,9 +18,9 @@ app.use(
         secret:process.env.sessionSecret,
         saveUninitialized:true,
         resave:false,
-        cookie:{
-            maxAge:500000,
-        },
+        // cookie:{
+        //     maxAge:500000,
+        // },
     })
 );
 app.use(nocache())

@@ -85,6 +85,7 @@ userRoute.post('/deletewishlist',Auth.isLogin,wishlistController.deleteWishlist)
 
 userRoute.post('/applyCoupon',offerController.applyCoupon)
 
+userRoute.get('/invoiceDownload/:id',Auth.isLogin,userController.loadinvoice)
 
 
 // userRoute.use(errorHandler)

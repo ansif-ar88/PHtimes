@@ -42,6 +42,10 @@ products: [{
         type:String,
         default:"placed"
     },
+    deliveryDate:{
+        type:Date,
+        
+    },
     cancelReason:{
         type:String,
         

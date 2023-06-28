@@ -8,6 +8,11 @@ const nodemailer = require("nodemailer")
 const cartmodel = require('../modals/cartmodel')
 const passwordValidator = require('password-validator');
 const bannermodel = require("../modals/bannermodel");
+const path = require("path")
+const fs = require("fs")
+const ejs = require("ejs");
+const ordermodel = require("../modals/ordermodel");
+const puppeteer = require("puppeteer")
 
 var schema = new passwordValidator();
 
@@ -223,27 +228,35 @@ const userLogout = async (req, res) => {
 };
 
 //================= LOAD SHOP PAGE ===============
+
 const loadShop = async (req, res) => {
   try {
-    // const productdata = await productmodel.find({ status: true }).populate("category")
-    const productdata = await productmodel.find({Status:true});
+    const productdata = await productmodel.find({ Status: true });
+
+    const session = req.session.user_id;
+    const catData = await categorymodel.find({ is_deleted: false });
+    let userdata = null;
 
     if (req.session.user_id) {
-      const session = req.session.user_id
-      const catData = await categorymodel.find({is_deleted:false});
-      const id = req.session.user_id
-      const userdata = await usermodal.findById({_id: req.session.user_id})
-      
-      res.render("shop", {
-        userData: userdata,
-        productData: productdata,
-        category: catData,session
-      });
-    } else {
-      const session = null
-      const catData = await categorymodel.find();
-      res.render("shop", { productData: productdata, category: catData,session });
+      userdata = await usermodal.findById(req.session.user_id);
     }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = 4;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const productCount = productdata.length;
+    const totalPages = Math.ceil(productCount / limit);
+    const paginatedProducts = productdata.slice(startIndex, endIndex);
+
+    res.render("shop", {
+      userData: userdata,
+      category: catData,
+      session,
+      productData: paginatedProducts,
+      currentPage: page,
+      totalPages: totalPages,
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -309,10 +322,21 @@ const filterByCategory =async (req,res)=>{
     const catData = await categorymodel.find({is_deleted:false })
     const userData = await usermodal.find({})
     const productData = await productmodel.find({category:id,Status:true}).populate('category')
+    
+    const page = parseInt(req.query.page) || 1;
+    const limit = 4;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const productCount = productData.length;
+    const totalPages = Math.ceil(productCount / limit);
+    const paginatedProducts = productData.slice(startIndex, endIndex);
     if (catData.length > 0) {
-      res.render("shop",{session,userData:userData,productData:productData,category:catData})
+      res.render("shop",{session,userData:userData,productData:paginatedProducts,currentPage: page,
+        totalPages: totalPages,
+        category:catData,})
     } else {
-      res.render("shop",{session,userData:userData,productData:[],category:catData})
+      res.render("shop",{session,userData:userData,productData:[],category:catData,currentPage: page,
+        totalPages: totalPages,})
 
     }
   } catch (error) {
@@ -337,12 +361,28 @@ const searchProduct = async (req,res)=>{
     //   );
     
       const productData = await productmodel.find({productName:{$regex: `^${search}`,$options:'i'}});
-  
+      const page = parseInt(req.query.page) || 1;
+    const limit = 4;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const productCount = productData.length;
+    const totalPages = Math.ceil(productCount / limit);
+    const paginatedProducts = productData.slice(startIndex, endIndex);
      
      if(productData.length > 0){
-      res.render('shop',{session,category:categoryData,productData:productData,userData:userData});
+      res.render('shop',{session,
+        category:categoryData,
+        productData:paginatedProducts,
+        userData:userData,
+        currentPage: page,
+        totalPages: totalPages,});
      }else{
-      res.render('shop',{session,category:categoryData,productData:productData,userData:userData});
+      res.render('shop',{session,
+        category:categoryData,
+        productData:paginatedProducts,
+        userData:userData,
+        currentPage: page,
+        totalPages: totalPages,});
      }
 
   }catch(error){
@@ -357,11 +397,20 @@ const priceSort = async(req,res) => {
      const userData = await usermodal.find({})
      const catData = await categorymodel.find({is_delete:false});
      const productData = await productmodel.find({}).populate('category').sort({price: id})
+
+     const page = parseInt(req.query.page) || 1;
+    const limit = 4;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const productCount = productData.length;
+    const totalPages = Math.ceil(productCount / limit);
+    const paginatedProducts = productData.slice(startIndex, endIndex);
     if (productData){
-      console.log(productData);
-      res.render('shop',{session,category:catData,productData:productData,userData:userData});
+      res.render('shop',{session,category:catData,productData:paginatedProducts,userData:userData,      currentPage: page,
+        totalPages: totalPages,});
     }else {
-      res.render('shop',{session,category:catData,productData:productData,userData:userData});
+      res.render('shop',{session,category:catData,productData:paginatedProducts,userData:userData,      currentPage: page,
+        totalPages: totalPages,});
     }
 
   } catch (error) {
@@ -462,6 +511,41 @@ const resubmitPassword = async (req, res) => {
   }
 };
 
+const loadinvoice = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const session = req.session.user_id;
+    const userData = await usermodal.findById({_id:session})
+    const orderData = await ordermodel.findOne({_id:id}).populate('products.productId');
+    const date = new Date()
+   
+     data = {
+      order:orderData,
+      user:userData,
+      date,
+    }
+
+    const filepathName = path.resolve(__dirname, '../views/userViews/invoice.ejs');
+    const html = fs.readFileSync(filepathName).toString();
+    const ejsData = ejs.render(html, data);
+    
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
+    const pdfBytes = await page.pdf({ format: 'Letter' });
+    await browser.close();
+
+   
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename= order invoice.pdf');
+    res.send(pdfBytes);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('An error occurred');
+  }
+};
+
 module.exports = {
   loadHome,
   insertUser,
@@ -482,10 +566,6 @@ module.exports = {
   forgotVerifyMail,
   verifyForgotMail,
   resubmitPassword,
-
-
-
-  // loadOrder,
-
+  loadinvoice,
 };
 

@@ -160,7 +160,7 @@
                     <td class="d-flex flex-column">
                       <a type="button" class="btn btn-outline-primary rounded-0 my-2" href="/admin/editProduct/<%= products[i]._id %>" type="button" >EDIT</a>                 
                       <a type="button" class="btn btn-danger  my-2" href="" data-bs-toggle="modal" data-bs-target="#staticBackdrop<%= products[i]._id %>">DELETE</a>
-                      <button type="button" class="btn btn-outline-primary my-2" data-bs-toggle="modal" data-bs-target="#addOfferModal">ADD OFFER</button>
+                      <button type="button" class="btn btn-outline-primary my-2" data-bs-toggle="modal" data-bs-target="#addOfferModal-<%= products[i]._id %>">ADD OFFER</button>
 
                     </td>
                   </tr>
@@ -183,7 +183,7 @@
                 </div>
 
 
-                <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="addOfferModal-<%= products[i]._id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">

@@ -68,7 +68,7 @@ const editCoupon = async(req,res) => {
  }   
 
 
-//========================== EDIT COUPON ======================
+//========================== DELETE COUPON ======================
 
 const deleteCoupon = async(req,res) => {
     try {

@@ -311,7 +311,46 @@ const loadSalesReport = async (req,res) => {
   }
 }
 
+const salesSort = async(req,res) =>{
+  try {
+    const adminData = await usermodel.findById({ _id: req.session.Auser_id });
+    const id = parseInt(req.params.id);
+    const from = new Date();
+    const to = new Date(from.getTime() - id * 24 * 60 * 60 * 1000);
+    
+    const order = await ordermodel.aggregate([
+      { $unwind: "$products" },
+      {$match: {
+        'products.status': 'Delivered',
+        $and: [
+          { 'products.deliveryDate': { $gt: to } },
+          { 'products.deliveryDate': { $lt: from } }
+        ]
+      }},
+      { $sort: { date: -1 } },
+      {
+        $lookup: {
+          from: 'products',
+          let: { productId: { $toObjectId: '$products.productId' } },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$productId'] } } }
+          ],
+          as: 'products.productDetails'
+        }
+      },  
+      {
+        $addFields: {
+          'products.productDetails': { $arrayElemAt: ['$products.productDetails', 0] }
+        }
+      }
+    ]);
 
+    res.render("salesreport", { order ,admin:adminData });
+   
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 
 module.exports = {
@@ -323,6 +362,7 @@ module.exports = {
   block,
   unblock,
   loadSalesReport,
+  salesSort
  
 
   
