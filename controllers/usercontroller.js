@@ -53,6 +53,7 @@ const loadLogin = async (req, res) => {
 };
 
 //================= INSERT USER ===============
+
 const insertUser = async (req, res) => {
   try {
     
@@ -81,7 +82,7 @@ const insertUser = async (req, res) => {
       password: spassword,
       is_admin: 0,
     });
-    email=user.email
+    email = user.email
     const name = req.body.name
     const userData = await user.save();
     if (userData) {
@@ -96,6 +97,8 @@ const insertUser = async (req, res) => {
     console.log(error.message);
   }
 };
+
+//=================== SEND VERIFICATION EMAIL =================
 
 const sendVerifyMail = async (name, email, otp) => {
   try {
@@ -124,6 +127,7 @@ const sendVerifyMail = async (name, email, otp) => {
 
 
 //================= LOAD OTP ===============
+
 const loadVerification = async(req,res) => {
   try {
     res.render("otp")
@@ -132,15 +136,12 @@ const loadVerification = async(req,res) => {
   }
 }
 
-
-
-
-
+//============ VERIFY OTP ==============
 
 const verifyEmail = async (req,res)=>{
   const otp2= req.body.otp;
   try { 
-      if(otp2==otp){
+      if(otp2 == otp){
           const UserData = await User.findOneAndUpdate({email:email},{$set:{is_verified:1}});
           if(UserData){
             res.redirect("/login");
@@ -194,11 +195,12 @@ const verifyLogin = async (req, res) => {
 };
 
 //================= LOAD HOME PAGE ===============
+
 const loadHome = async (req, res,next) => {
   try {
     const id = req.session.user_id
     const session = id
-    const productdata = await productmodel.find()
+    const productdata = await productmodel.find({ Status: true })
     const banners = await bannermodel.find()
 
     if(id){
@@ -229,7 +231,7 @@ const userLogout = async (req, res) => {
 
 //================= LOAD SHOP PAGE ===============
 
-const loadShop = async (req, res) => {
+const loadShop = async (req, res,next) => {
   try {
     const productdata = await productmodel.find({ Status: true });
 
@@ -258,7 +260,7 @@ const loadShop = async (req, res) => {
       totalPages: totalPages,
     });
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 };
 
@@ -266,7 +268,7 @@ const loadShop = async (req, res) => {
 
 
 
-const loadShowproduct = async (req, res) => {
+const loadShowproduct = async (req, res,next) => {
   try {
     if (req.session.user_id) {
      const session = req.session.user_id
@@ -274,12 +276,7 @@ const loadShowproduct = async (req, res) => {
 
       const data = await productmodel.findOne({ _id: id });
       const userData = await usermodal.findById({_id: req.session.user_id})
-
-      // const cartData = await cartmodel.findOne({ userId: session });
-      // const productExist = cartData.products.some(
-      //   (product) => product.productId == id);
-      res.render("showProduct", {
-        //  productExist,
+      res.render("showProduct", {       
         productData: data,userData:userData,session });
     } else {
            const session = null
@@ -288,14 +285,14 @@ const loadShowproduct = async (req, res) => {
       res.render("showProduct", { productData: data ,session});
     }
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 };
 
 
 // ====================== LAOAD PROFILE =============
 
-const loadProfile = async (req, res) => {
+const loadProfile = async (req, res,next) => {
   try {
     if(req.session.user_id){
       const session = req.session.user_id
@@ -309,19 +306,19 @@ const loadProfile = async (req, res) => {
     
     
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 };
 
 //====================== FILTER BY CATEGORY ==================
 
-const filterByCategory =async (req,res)=>{
+const filterByCategory =async (req,res,next)=>{
   try {
     const id = req.params.id
     const session = req.session.user_id
     const catData = await categorymodel.find({is_deleted:false })
     const userData = await usermodal.find({})
-    const productData = await productmodel.find({category:id,Status:true}).populate('category')
+    const productData = await productmodel.find({category:id,Status: true }).populate('category')
     
     const page = parseInt(req.query.page) || 1;
     const limit = 4;
@@ -340,27 +337,20 @@ const filterByCategory =async (req,res)=>{
 
     }
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 
 //===================== SEARCH PRODUCT ====================
 
-const searchProduct = async (req,res)=>{
+const searchProduct = async (req,res,next)=>{
   try{
      const searchData = req.body.search;
      const search = searchData.trim()
      const session = req.session.user_id;
      const userData = await usermodal.find({})
      const categoryData = await categorymodel.find({is_deleted:false});
-    //  const productData = await productmodel.find(
-    //  {$or: [
-    //   {productName:{$regex:`^${search}`, $options:'i'}},
-    //   {brand:{$regex:`^${search}`, $options:'i'}},
-    //   {category:{$regex:`^${search}`, $options:'i'}},]}
-    //   );
-    
-      const productData = await productmodel.find({productName:{$regex: `^${search}`,$options:'i'}});
+      const productData = await productmodel.find({productName:{$regex: `^${search}`,$options:'i'}});     
       const page = parseInt(req.query.page) || 1;
     const limit = 4;
     const startIndex = (page - 1) * limit;
@@ -386,17 +376,17 @@ const searchProduct = async (req,res)=>{
      }
 
   }catch(error){
-    console.log(error.message);
+    next(error);
   }
 }
 
-const priceSort = async(req,res) => {
+const priceSort = async(req,res,next) => {
   try {
     const id = req.params.id
     const session = req.session.user_id;
      const userData = await usermodal.find({})
-     const catData = await categorymodel.find({is_delete:false});
-     const productData = await productmodel.find({}).populate('category').sort({price: id})
+     const categoryData = await categorymodel.find({is_deleted:false});
+     const productData = await productmodel.find({ Status: true }).populate('category').sort({price: id})
 
      const page = parseInt(req.query.page) || 1;
     const limit = 4;
@@ -406,25 +396,25 @@ const priceSort = async(req,res) => {
     const totalPages = Math.ceil(productCount / limit);
     const paginatedProducts = productData.slice(startIndex, endIndex);
     if (productData){
-      res.render('shop',{session,category:catData,productData:paginatedProducts,userData:userData,      currentPage: page,
+      res.render('shop',{session,category:categoryData,productData:paginatedProducts,userData:userData,      currentPage: page,
         totalPages: totalPages,});
     }else {
-      res.render('shop',{session,category:catData,productData:paginatedProducts,userData:userData,      currentPage: page,
+      res.render('shop',{session,category:categoryData,productData:paginatedProducts,userData:userData,      currentPage: page,
         totalPages: totalPages,});
     }
 
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
   
 
 }
 //======================== LOAD FORGOT PASSWORD ===================
-const forgotPassword = async (req,res) =>{
+const forgotPassword = async (req,res,next) =>{
   try {
     res.render("forgotPassword")
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 
@@ -468,19 +458,14 @@ const verifyForgotMail = async (req, res) => {
 
 //======================== RESUBMIT PASSWORD ===================
 
-const resubmitPassword = async (req, res) => {
+const resubmitPassword = async (req, res,next) => {
   try {
-    //re confirmation password
-
     if (req.body.password != req.body.password2) {
       res.render("resubmitPassword", {
         message: "Password Not Matching",
       });
       return;
     }
-
-
-
     const passwordValidate = await schema.validate(req.body.password);
 
     if (!passwordValidate) {
@@ -507,11 +492,11 @@ const resubmitPassword = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 };
 
-const loadinvoice = async (req, res) => {
+const loadinvoice = async (req, res,next) => {
   try {
     const id = req.params.id;
     const session = req.session.user_id;
@@ -541,8 +526,7 @@ const loadinvoice = async (req, res) => {
     res.send(pdfBytes);
 
   } catch (err) {
-    console.log(err);
-    res.status(500).send('An error occurred');
+    next(error);
   }
 };
 

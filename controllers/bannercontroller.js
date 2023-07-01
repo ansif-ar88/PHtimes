@@ -1,22 +1,20 @@
 const usermodel = require("../modals/usermodal")
 const bannermodel = require("../modals/bannermodel")
-const fs=require('fs')
-const path = require("path")
 
 //======================== LOAD BANNER MANAGEMENT ===============
 
-const loadBannerManagement = async(req,res) => {
+const loadBannerManagement = async(req,res,next) => {
     try {
         const adminData = await usermodel.find({is_admin : 1})
         const banners = await bannermodel.find()
         res.render("bannerManagement",{admin:adminData,banners})
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 //================ ADD BANNER ====================
 
-const addBanner = async (req, res) =>{
+const addBanner = async (req,res,next) =>{
   try {
     const heading = req.body.heading
     let image ='';
@@ -30,13 +28,13 @@ const addBanner = async (req, res) =>{
     Banner.save()
     res.redirect("/admin/banner")
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 
 //================ EDIT BANNER ====================
 
-const editBanner = async (req, res) =>{
+const editBanner = async (req,res,next) =>{
 
   try {
    
@@ -46,7 +44,6 @@ const editBanner = async (req, res) =>{
 
     if(req.file){
       image = req.file.filename
-      console.log(image,"aaaaaaaaaaaaaaaaaaaaa");
     }
     await bannermodel.findOneAndUpdate({_id:id},{
       $set:{
@@ -56,7 +53,7 @@ const editBanner = async (req, res) =>{
     })
     res.redirect("/admin/banner")
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 

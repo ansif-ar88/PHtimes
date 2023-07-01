@@ -13,7 +13,7 @@ const crypto = require("crypto")
 
 //================== LOLAD CHECKOUT =====================
 
-const loadChekout = async(req,res)=>{
+const loadChekout = async(req,res,next)=>{
     try {
       const session = req.session.user_id
       const couponData = await couponmodel.find({})
@@ -55,7 +55,7 @@ const loadChekout = async(req,res)=>{
           res.redirect('/')
         }
     } catch (error) {
-      console.log(error.message);
+      next(error);
     }
   }
 
@@ -69,7 +69,7 @@ var instance = new razorpay({
 
 // ============ PLACE ORDER =================
 
-const placeOrder = async (req,res) => {
+const placeOrder = async (req,res,next) => {
   try {
     const id = req.session.user_id
     const userName = await usermodel.findOne({_id:id})
@@ -143,7 +143,7 @@ const placeOrder = async (req,res) => {
       res.redirect("/checkout")
     }
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 
@@ -182,7 +182,7 @@ const verifyPayment = async(req,res)=>{
 
 // ==================== LOAD ORDERS IN USER SIDE ================== 
 
-const loadOrderUser = async(req,res) => {
+const loadOrderUser = async(req,res,next) => {
   try {
       const session = req.session.user_id
       const id = req.session.user_id
@@ -200,13 +200,13 @@ const loadOrderUser = async(req,res) => {
 
     }
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 
 // ==================== LOAD ORDERS IN ADMIN SIDE ================== 
 
-const loadOrderAdmin = async(req,res) => {
+const loadOrderAdmin = async(req,res,next) => {
   try {
       const session = req.session.Auser_id
       const id = req.session.user_id
@@ -223,13 +223,13 @@ const loadOrderAdmin = async(req,res) => {
 
     }
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 
 //======================== LOAD SINGLE ORDER USER SIDE =================
 
-const loadViewSingleUser = async (req,res)=> {
+const loadViewSingleUser = async (req,res,next)=> {
   try {
     const id = req.params.id;
     const session =req.session.user_id
@@ -238,21 +238,21 @@ const loadViewSingleUser = async (req,res)=> {
   
     res.render("singleOrder",{session,userData:userdata,orders:orders})
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 
 
 //======================== LOAD SINGLE ORDER ADMIN SIDE =================
 
-const loadViewSingleAdmin = async (req,res)=> {
+const loadViewSingleAdmin = async (req,res,next)=> {
   try {
     const id = req.params.id
     const adminData = await usermodel.findOne({is_admin : 1})
     const orderData = await ordermodel.findOne({_id:id}).populate("products.productId")
     res.render("singleOrder",{admin:adminData,orders:orderData})
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 }
 
@@ -389,15 +389,6 @@ const returnOrder = async(req,res) =>{
   }
 }
 
-// ================== COLLECT RETURN ORDER ==================
-
-const confirmReturn = async(req,res) => {
-  try {
-    
-  } catch (error) {
-    
-  }
-}
   module.exports = {
     loadChekout,
     placeOrder,
@@ -409,9 +400,8 @@ const confirmReturn = async(req,res) => {
     CancelOrder,
     changeStatus,
     returnOrder,
-    confirmReturn
 
-    // loadEmptyCheckout
+
 
     
   }

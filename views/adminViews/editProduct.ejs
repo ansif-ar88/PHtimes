@@ -11,14 +11,15 @@
                     <div class="card-body">
                       <h4 class="card-title">EDIT PRODUCT</h4>
                       
-                      <form class="form-sample" action="" method="post" enctype="multipart/form-data" >
+                      <form class="form-sample" action="" method="post" enctype="multipart/form-data" id="form">
                         
                         <div class="row">
                           <div class="col-md-12">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Product Name</label>
                               <div class="col-sm-9">
-                                <input type="text" class="form-control" name="productName" value="<%= products.productName %>"/>
+                                <input type="text" class="form-control" id="pname" name="productName" value="<%= products.productName %>"/>
+                                <span class="text-danger " id="pnameError"></span>
                               </div>
                             </div>
                           </div>
@@ -40,7 +41,8 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Price</label>
                               <div class="col-sm-9">
-                                <input class="form-control" name="price" value="<%= products.price %>"/>
+                                <input type="number" class="form-control" id="price" name="price" value="<%= products.price %>"/>
+                                <span class="text-danger " id="priceError"></span>
                               </div>
                             </div>
                           </div>
@@ -92,7 +94,8 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">stock Quantity</label>
                               <div class="col-sm-9">
-                                <input type="text" class="form-control" name="StockQuantity" value="<%= products.StockQuantity %>" />
+                                <input type="number" class="form-control" id="stock" name="StockQuantity" value="<%= products.StockQuantity %>" />
+                                <span class="text-danger " id="stockError"></span>
                               </div>
                             </div>
                           </div>
@@ -100,7 +103,8 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Description</label>
                               <div class="col-sm-9">                               
-                                <input class="form-control" name="description" value="<%= products.description %>"> 
+                                <input class="form-control" id="description" name="description" value="<%= products.description %>"> 
+                                <span class="text-danger " id="descriptionError"></span>
                               </div>
                             </div>
                           </div>
@@ -131,6 +135,7 @@
               </div>
             </div>
             </div>
+
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -141,11 +146,12 @@
                 </div>
 
                 <!-- form starts -->
-                <form action="/admin/editproducts/updateimage/<%- products._id  %>" method="post"
+                <form action="/admin/editproducts/updateimage/<%- products._id  %>" method="post" id="imgForm"
                   enctype="multipart/form-data">
                   <div class="modal-body">
 
-                    <input multiple type="file" class="form-control" id="basic-default-name" name="image" />
+                    <input multiple type="file" class="form-control" id="imageValidate" name="image" />
+                    <p class="text-danger " id="imageError"></p>
                     <br>
                     <% products.image.forEach((x,index)=> { %>
 
@@ -168,4 +174,85 @@
               </form>
             </div>
           </div>
-            <%- include('../layouts/adminLayouts/footer.ejs') %>
+
+          <script>
+            const form = document.getElementById("form");
+            const productName = document.getElementById("pname");
+            const price = document.getElementById("price");
+            const StockQuantity = document.getElementById("stock");
+            const description = document.getElementById("description");
+           
+    
+            const proNameError = document.getElementById("pnameError");
+            const priceError = document.getElementById("priceError");
+            const stockError = document.getElementById("stockError");
+            const descriptionError = document.getElementById("descriptionError");
+            
+    
+            form.addEventListener("submit", (event) => {
+            event.preventDefault();
+    
+            const productNamevalue = productName.value.trim();
+            const pricevalue = price.value.trim();
+            const StockQuantityvalue = StockQuantity.value.trim();
+            const descriptionvalue = description.value.trim();
+            
+            if (!productNamevalue) {
+              proNameError.textContent = "Please Enter Product Name";
+              return;
+            } else {
+              proNameError.textContent = "";
+            }
+    
+            if(!pricevalue){
+              priceError.textContent = "Please Enter Price";
+              return
+            }else if(pricevalue < 0){
+              priceError.textContent = "Please Enter a positive Number";
+              return
+            }else{
+              priceError.textContent ="";
+            }
+    
+            if(!StockQuantityvalue){
+              stockError.textContent = "Please Enter Stock Quantity"
+              return
+            }else if(StockQuantityvalue < 0){
+              stockError.textContent = "Please Enter Positive Number"
+              return
+            }else{
+              stockError.textContent = ""
+            }
+    
+            if (!descriptionvalue) {
+              descriptionError.textContent = "Please Enter Description";
+              return;
+            }
+    
+
+            form.submit();
+          });
+    
+          const imgForm = document.getElementById("imgForm")
+          const imageValidate = document.getElementById("imageValidate");
+          const imageError = document.getElementById("imageError");
+          imgForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+
+          const image = imageValidate.files[0];
+                 if (!image) {
+                  imageError.textContent = 'Please select an image';
+                  return;
+                } else {
+                  const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
+                if (!allowedExtensions.test(image.name)) {
+                imageError.textContent = "Invalid image file format";
+               return;
+              }
+             imageError.textContent = "";
+            }
+            imgForm.submit();
+          })
+            
+    </script>
+<%- include('../layouts/adminLayouts/footer.ejs') %>

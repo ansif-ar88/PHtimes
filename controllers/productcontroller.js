@@ -7,16 +7,16 @@ const path = require("path")
 
 //============= LOAD PRODUCT LIST PAGE ===================
 
-const productList = async (req,res) => {
+const productList = async (req,res,next) => {
     try {
         const productData = await productmodel.find({Status:true}).populate('category')
         const categoryData = await categorymodel.find({is_deleted:false})
         const adminData = await usermodal.findById({ _id: req.session.Auser_id });
         res.render("productList",{products : productData,admin:adminData,category: categoryData});
-        // res.redirect('/productList')
+
 
     } catch (error) {
-        console.log(error.message);
+      next(error);
     }
 }
 
@@ -55,7 +55,7 @@ const insertProduct = async(req,res) => {
 }
 // ======================== SHOW EDIT PRODUCT  =====================
 
-const editProduct = async(req,res) => {
+const editProduct = async(req,res,next) => {
     try {
        
        const id = req.params.id
@@ -64,12 +64,12 @@ const editProduct = async(req,res) => {
        const adminData = await usermodal.findById({_id:req.session.Auser_id})
        res.render("editProduct",{admin:adminData,category:catData,products:productData})
     } catch (error) {
-        console.log(error.message);
+      next(error);
     }
 }
 
 // ======================== EDIT PRODUCT  =====================
-const editUpdateProduct = async (req,res) =>{
+const editUpdateProduct = async (req,res,next) =>{
     if(req.body.productName.trim()=== "" || req.body.category.trim() === "" || req.body.description.trim() === "" || req.body.StockQuantity.trim() === "" || req.body.price.trim() === "" ) {
         const id = req.params.id
         const productData = await productmodel.findOne({_id:id}).populate('category')
@@ -88,7 +88,6 @@ const editUpdateProduct = async (req,res) =>{
             const offprice = price - offAmt
                 
                 const id = req.params.id
-                // console.log("data : "+req.body.productName);
                 await productmodel.updateOne({_id:id},{$set:{
                     productName:req.body.productName,
                     category:req.body.category,
@@ -103,7 +102,7 @@ const editUpdateProduct = async (req,res) =>{
                 res.redirect('/admin/productList')
             // }
         } catch (error) {
-            console.log(error.message);
+          next(error);
         }
     }
 }

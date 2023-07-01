@@ -5,7 +5,7 @@ const cartmodel = require("../modals/cartmodel")
 
 //================= LOAD WISHLIST ==================
 
-const loadWishlist = async(req,res) => {
+const loadWishlist = async(req,res,next) => {
     try {
         const session = req.session.user_id
         const userData = await usermodel.find({_id:session})
@@ -31,7 +31,7 @@ const loadWishlist = async(req,res) => {
             }
         
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
@@ -102,7 +102,7 @@ const addToCartFromWish = async (req, res) => {
         },
         { upsert: true, new: true }
       );
-      // console.log(userName);
+
   
       const updatedProduct = cartData.products.find((product) => product.productId === productId);
       const updatedQuantity = updatedProduct ? updatedProduct.count : 0;
@@ -116,21 +116,28 @@ const addToCartFromWish = async (req, res) => {
   
       const cartProduct = cartData.products.find((product) => product.productId === productId);
   
+      let newPrice;
+
+      if(productData.offPrice > 0){
+        newPrice = productData.offPrice
+      }else{
+        newPrice = productData.price
+      }
       if (cartProduct) {
         await cartmodel.updateOne(
           { userId: userId, "products.productId": productId },
           {
             $inc: {
               "products.$.count": 1,
-              "products.$.totalPrice": productData.price,
+              "products.$.totalPrice": newPrice,
             },
           }
         );
       } else {
         cartData.products.push({
           productId: productId,
-          productPrice: productData.price,
-          totalPrice: productData.price,
+          productPrice: productData.newPrice,
+          totalPrice: productData.newPrice,
         });
         await cartData.save();
       }

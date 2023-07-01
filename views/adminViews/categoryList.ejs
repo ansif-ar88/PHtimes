@@ -26,19 +26,7 @@
                   </div>
                   </div>
                   </div>
-                  <% 
 
-				if(typeof mes !== 'undefined' ){
-				  
-				  %>
-					  <div class="alert alert-danger my-5" role="alert">
-						  <%= mes %>
-					  </div>
-
-				  <% 
-
-				}
-		  %>
 
                         <!-- ================================ ADD CATEGORY ============================= -->
                         <div class="row d-flex justify-content-center">
@@ -56,14 +44,15 @@
                           </div>
                           <div class="modal-body">
                     
-                            <form class="forms-sample" method="post" action="/admin/insertCategory">
+                            <form class="forms-sample" method="post" id="addform" action="/admin/insertCategory">
                               <div class="form-group">
                                 <label for="exampleInputName1">CATEGORY NAME</label>
-                                <input type="text" class="form-control" id="exampleInputName1" placeholder="Name" name="categoryName">
+                                <input type="text" class="form-control" id="categoryName" placeholder="Name" name="categoryName">
+                                <span class="text-danger " id="catError"></span>
                               </div>
                               
-                             <a href="/admin/categoryList"> <button type="submit" class="btn btn-primary mr-2" >Submit</button>
-                              <button class="btn btn-dark" id="Cancel" >Cancel</button></a>
+                             <button type="submit" class="btn btn-primary mr-2" >Submit</button>
+                              <button type="button" class="btn btn-dark" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                             </form>
                         </div>
                       </div>
@@ -106,15 +95,16 @@
                               <div class="modal-dialog">
                                 <div class="modal-content">
                                   <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">EDIT COUPON</h5>
+                                    <h5 class="modal-title" id="exampleModalLabel">EDIT CATEGORY</h5>
                                     
                                   </div>
                                   <div class="modal-body">
-                                    <form action="/admin/editCategory/<%= category[i]._id %>" method="post" class="forms-sample">
+                                    <form action="/admin/editCategory/<%= category[i]._id %>" method="post" class="forms-sample" id="editForm">
 
                                       <div class="form-group">
-                                        <label for="exampleInputPassword1">Criteria</label>
-                                        <input type="text" class="form-control"  value="<%= category[i].categoryName %>" name="categoryName">
+                                        <label for="exampleInputPassword1">Category Name</label>
+                                        <input type="text" class="form-control"  value="<%= category[i].categoryName %>" name="categoryName" id="editCatName">
+                                        <span class="text-danger " id="catEditError"></span>
                                       </div>
                                     <button type="submit" class="btn btn-primary mr-2">Submit</button>
                                         
@@ -138,11 +128,40 @@
                 </div>
                 </div>
                 </div>
+              </div>
+              </div>
+              </div>
+              <script>
+                  const form = document.getElementById("addform") 
+                  const categoryName = document.getElementById("categoryName") 
+                  const catError = document.getElementById("catError")
 
+                  form.addEventListener("submit", (event) => {
+                  event.preventDefault();
+                  const catValue = categoryName.value.trim()
+                  if(!catValue){
+                    catError.textContent = "Category Name Can't Be Blank";
+                    return
+                  }else{
+                    catError.textContent = "";
+                  }
+                  form.submit();
+                })
 
-                    
-               
-              </div>
-              </div>
-              </div>
+                  const editForm = document.getElementById("editForm") 
+                  const editCatName = document.getElementById("editCatName") 
+                  const catEditError = document.getElementById("catEditError")
+
+                  editForm.addEventListener("submit", (event) => {
+                  event.preventDefault();
+                  const catValue = categoryName.value.trim()
+                  if(!catValue){
+                    catEditError.textContent = "Category Name Can't Be Blank";
+                    return
+                  }else{
+                    catEditError.textContent = "";
+                  }
+                  editForm.submit();
+                })
+              </script>
               <%- include('../layouts/adminLayouts/footer.ejs') %>

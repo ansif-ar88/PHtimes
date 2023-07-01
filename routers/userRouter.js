@@ -71,7 +71,7 @@ userRoute.get('/checkout',Auth.isLogin,orderController.loadChekout)
 userRoute.post('/verifyPayment',orderController.verifyPayment)
 userRoute.post('/placeOrder',orderController.placeOrder);
 userRoute.post('/returnOrder',orderController.returnOrder);
-userRoute.post('/returnConfirm',orderController.confirmReturn);
+
 
 
 userRoute.get("/orders",Auth.isLogin,orderController.loadOrderUser)
@@ -88,8 +88,11 @@ userRoute.post('/applyCoupon',offerController.applyCoupon)
 userRoute.get('/invoiceDownload/:id',Auth.isLogin,userController.loadinvoice)
 
 
-// userRoute.use(errorHandler)
 
+userRoute.use(errorHandler)
 
+userRoute.get("*",function(req,res) {
+    res.redirect("/")
+})
 
 module.exports = userRoute

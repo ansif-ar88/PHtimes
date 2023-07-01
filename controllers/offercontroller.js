@@ -4,7 +4,7 @@ const productmodel = require('../modals/productmodel')
 
 //============= LOAD COUPON PAGE ===========
 
-const loadCoupon = async (req,res) => {
+const loadCoupon = async (req,res,next) => {
 try {
     const adminData = req.session.Auser_id
     const coupon = await couponmodel.find({})
@@ -15,13 +15,13 @@ try {
     }
     
 } catch (error) {
-    console.log(error.message);
+    next(error);
 }
 }
 
 //============= INSERT COUPON ===========
 
-const insertCoupon = async(req,res)=>{
+const insertCoupon = async(req,res,next)=>{
     try {
         const coupon = new couponmodel({
             couponName:req.body.couponName,
@@ -40,13 +40,13 @@ const insertCoupon = async(req,res)=>{
         }
         
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
 //========================== EDIT COUPON ======================
 
-const editCoupon = async(req,res) => {
+const editCoupon = async(req,res,next) => {
     try {
         const id = req.params.id
         const editedCoupon = await couponmodel.findByIdAndUpdate({_id:id},{$set:{
@@ -63,14 +63,14 @@ const editCoupon = async(req,res) => {
         res.redirect("/admin/coupons")
     }
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
  }   
 
 
 //========================== DELETE COUPON ======================
 
-const deleteCoupon = async(req,res) => {
+const deleteCoupon = async(req,res,next) => {
     try {
         const id = req.body.id
         console.log(id);
@@ -81,13 +81,13 @@ const deleteCoupon = async(req,res) => {
             res.redirect("/admin/coupons")
         }
     } catch (error) {
-       console.log(error.message); 
+        next(error); 
     }
 }
 
 //================== APPLYCOUPON ==================
 
-const applyCoupon = async(req,res)=>{
+const applyCoupon = async(req,res,next)=>{
     try {
       const code = req.body.code;
      
@@ -114,12 +114,12 @@ const applyCoupon = async(req,res)=>{
       }
       res.json({invalid:true})
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 //=============== ADD OFFER ==============
 
-const addOffer = async(req,res) =>{
+const addOffer = async(req,res,next) =>{
     try {
         const id = req.body.id
         const offName = req.body.offName
@@ -140,7 +140,7 @@ const addOffer = async(req,res) =>{
         }  
 
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 

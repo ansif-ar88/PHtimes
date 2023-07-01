@@ -22,16 +22,18 @@
               </div>
                 <div class="modal-body">
                
-                  <form class="form-sample" action="/admin/addproduct" method="post" enctype="multipart/form-data" >
+                  <form class="form-sample" action="/admin/addproduct" method="post" enctype="multipart/form-data" id="form">
                         
                   
                     <div class="form-group">
                       <label class="col-sm-3 col-form-label">Product Name</label>
                       <div class="col-sm-12">
-                        <input type="text" class="form-control" name="productName"/>
+                        <input type="text" class="form-control" id="pname" name="productName"/>
+                        <span class="text-danger " id="pnameError"></span>
+
                       </div>
                     </div>
-<div class="form-group">
+                      <div class="form-group">
                         <label class="col-sm-3 col-form-label">ideal for</label>
                         <div class="col-sm-12">
                           <select class="form-control" name="idealfor">
@@ -43,7 +45,8 @@
                     <div class="form-group">
                         <label class="col-sm-3 col-form-label">Price</label>
                         <div class="col-sm-12">
-                          <input class="form-control" name="price" />
+                          <input type="number" class="form-control" id="price" name="price" />
+                          <span class="text-danger " id="priceError"></span>
                         </div>
                       </div>
                       <div class="form-group">
@@ -57,10 +60,11 @@
 </div>
                       </div>
                       <div class="form-group">
-                        <label>File upload</label> 
-                        <div class="input-group col-xs-12">
-                            <input class="bt" style="height: 28px;width: 228px ; background-color: gray;color: white;" accept="Image/*" type="file" name="image" multiple>
-                        </div>
+                        <label class="col-sm-3 col-form-label" >File upload</label> 
+                        <div class="col-sm-12">
+                            <input class="form-control" style="height: 40;width: 228px ; background-color: gray;color: white;" accept="Image/*" type="file" name="image" id="imageValidate" multiple>
+                         <p class="text-danger " id="imageError"></p>
+                          </div>
                       </div>
                       <div class="form-group">
                         <label class="col-sm-3 col-form-label">brand</label>
@@ -76,15 +80,16 @@
                       <div class="form-group">
                         <label class="col-sm-3 col-form-label">stock Quantity</label>
                         <div class="col-sm-12">
-                          <input type="text" class="form-control" name="StockQuantity" />
+                          <input type="number" class="form-control" name="StockQuantity" id="stock" />
+                          <span class="text-danger " id="stockError"></span>
                         </div>
                       </div>
                       <div class="form-group">
                         <label class="col-sm-3 col-form-label">Description</label>
                         <div class="col-sm-12">
                           <!-- <input type="text" class="form-control" name="description"/> -->
-                          <textarea class="form-control" id="exampleTextarea1" rows="4" name="description"></textarea>
-                          
+                          <textarea class="form-control" id="description" rows="4"  name="description"></textarea>
+                          <span class="text-danger " id="descriptionError"></span>
                         </div>
                         
                         
@@ -100,14 +105,7 @@
         </div>
         </div>
         </div>
-        </div>
-                
-
-
-
-
-
-
+        </div>               
 
       <div class="col-lg-12 grid-margin stretch-card">
         <div class="card">
@@ -126,7 +124,6 @@
                 <th>Brand</th>
                 <th>Category</th>
                 <th>Stock</th>
-                <!-- <th>Description</th> -->
                 <th>Action</th>
               </tr>
             </thead>
@@ -195,6 +192,7 @@
                               <div class="form-group">
                                 <label for="exampleInputUsername1">Offer Name</label>
                                 <input type="text" class="form-control"  placeholder="Coupon Name" name="offName">
+                              
                               </div>
                              
                               <div class="form-group">
@@ -233,6 +231,75 @@
       </div>
       </div>
     
+<script>
+        const form = document.getElementById("form");
+        const productName = document.getElementById("pname");
+        const price = document.getElementById("price");
+        const StockQuantity = document.getElementById("stock");
+        const description = document.getElementById("description");
+        const imageValidate = document.getElementById("imageValidate");
 
+        const proNameError = document.getElementById("pnameError");
+        const priceError = document.getElementById("priceError");
+        const stockError = document.getElementById("stockError");
+        const descriptionError = document.getElementById("descriptionError");
+        const imageError = document.getElementById("imageError");
+
+        form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const productNamevalue = productName.value.trim();
+        const pricevalue = price.value.trim();
+        const StockQuantityvalue = StockQuantity.value.trim();
+        const descriptionvalue = description.value.trim();
+        
+        if (!productNamevalue) {
+          proNameError.textContent = "Please Enter Product Name";
+          return;
+        } else {
+          proNameError.textContent = "";
+        }
+
+        if(!pricevalue){
+          priceError.textContent = "Please Enter Price";
+          return
+        }else if(pricevalue < 0){
+          priceError.textContent = "Please Enter a positive Number";
+          return
+        }else{
+          priceError.textContent ="";
+        }
+
+        if(!StockQuantityvalue){
+          stockError.textContent = "Please Enter Stock Quantity"
+          return
+        }else if(StockQuantityvalue < 0){
+          stockError.textContent = "Please Enter Positive Number"
+          return
+        }else{
+          stockError.textContent = ""
+        }
+
+        if (!descriptionvalue) {
+          descriptionError.textContent = "Please Enter Description";
+          return;
+        }
+
+        const image = imageValidate.files[0];
+    if (!image) {
+      imageError.textContent = 'Please select an image';
+      return;
+    } else {
+      const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
+      if (!allowedExtensions.test(image.name)) {
+        imageError.textContent = "Invalid image file format";
+        return;
+      }
+      imageError.textContent = "";
+    }
+        form.submit();
+      });
+
+</script>
 <%- include('../layouts/adminLayouts/footer.ejs') %>
 

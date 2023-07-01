@@ -6,7 +6,7 @@ const usermodal = require("../modals/usermodal");
 
 //================== LOAD ADD ADDRESS ===================
 
-const loadAddAddress = async (req, res) => {
+const loadAddAddress = async (req, res,next) => {
   try {
     if (req.session.user_id) {
       const session = req.session.user_id;
@@ -18,7 +18,7 @@ const loadAddAddress = async (req, res) => {
       res.redirect("/home", { message: "please login" });
     }
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 };
 
@@ -80,7 +80,7 @@ const addAddress = async (req, res) => {
 
 //==================== LOAD EDIT ADDRESS ======================
 
-const loadEditAddress = async (req, res) => {
+const loadEditAddress = async (req,res,next) => {
   try {
     const id = req.params.id;
     const session = req.session.user_id;
@@ -96,7 +96,7 @@ const loadEditAddress = async (req, res) => {
       address: address[0],
     });
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 };
 //================================ EDIT AND SAVE ADDRESS ===================
@@ -171,7 +171,7 @@ const deleteAddress = async (req,res) => {
 
 //================== SHOW ADDRESS IN USER PROFILE ================
 
-const showAddress = async(req,res) =>{
+const showAddress = async(req,res,next) =>{
     try {
         const session = req.session.user_id
         const userData = await usermodal.findOne ({_id:req.session.user_id});
@@ -188,16 +188,16 @@ const showAddress = async(req,res) =>{
                 res.redirect('/home')
             }
     } catch (error) {
-        log(error.message)
+        next(error)
     }
 }
 
 module.exports = {
-//   loadAddresses,
+
   loadAddAddress,
   addAddress,
   loadEditAddress,
   editAddress,
   deleteAddress,
-  showAddress, // in user profile
+  showAddress,
 };

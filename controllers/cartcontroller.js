@@ -7,7 +7,7 @@ const productmodel = require("../modals/productmodel");
 
 //================== LOAD CART PAGE ===============
 
-const loadCart = async (req, res) => {
+const loadCart = async (req, res,next) => {
   try {
     let id = req.session.user_id;
     const session = req.session.user_id;
@@ -68,18 +68,18 @@ const loadCart = async (req, res) => {
 
     }
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 };
 
 
 //================== LOAD EMPTYCART PAGE ===============
 
-const loadEmptyCart = async (req,res) =>{
+const loadEmptyCart = async (req,res,next) =>{
     try {
         res.render("cartEmpty")
     } catch (error) {
-        console.log(error.message);
+      next(error);
     }
 }
 
@@ -87,7 +87,7 @@ const loadEmptyCart = async (req,res) =>{
 
 
 
-const addToCart = async (req, res) => {
+const addToCart = async (req, res,next) => {
   try {
     const userId = req.session.user_id;
     const userData = await usermodel.findOne({ _id: userId });
@@ -129,7 +129,6 @@ if(productData.offPrice > 0){
   newPrice = productData.price
 }
     if (cartProduct) {
-
       await cartmodel.updateOne(
         { userId: userId, "products.productId": productId },
         {
@@ -150,14 +149,13 @@ if(productData.offPrice > 0){
 
     res.json({ success: true });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ success: false, message: "Server Error" });
+    next(error);
   }
 }
   
 //============ CHANGE PRODUCT QUANTITY =============
 
-const changeProductCount = async (req, res) => {
+const changeProductCount = async (req, res,next) => {
   try {
     const userData = req.session.user_id;
     const proId = req.body.product;
@@ -212,8 +210,7 @@ const changeProductCount = async (req, res) => {
     
     res.json({ success: true });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 };
 

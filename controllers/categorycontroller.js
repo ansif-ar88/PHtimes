@@ -7,27 +7,27 @@ const toastr = require('toastr')
 
 //========== LIST CATEGORY ==========
 
-const categoryList =  async (req,res) =>{
+const categoryList =  async (req,res,next) =>{
     try {
         const catData = await category.find({});
         const adminData = await usermodal.findById({ _id: req.session.Auser_id });
 
         res.render('categoryList',{category:catData,mes,admin : adminData})    
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
 //======== ADD CATEGORY=================
 
-const insertCategory = async (req,res) =>{
+const insertCategory = async (req,res,next) =>{
     try {
         if(req.session.Auser_id){
             const catName = uc.upperCase(req.body.categoryName);
             const Category = new category({categoryName : catName});
             if(catName.trim().length === 0){
                 res.redirect('/admin/categoryList');
-                mes = "invalid typing"
+                // mes = "invalid typing"
             }else{
                 const categoryDatas = await category.findOne({categoryName:catName});
                 if(categoryDatas){
@@ -46,7 +46,7 @@ const insertCategory = async (req,res) =>{
             res.redirect('/admin')
         }
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
@@ -54,7 +54,7 @@ const insertCategory = async (req,res) =>{
   
 //================== UPDATE AND SAVE==========
 
-const saveCategory = async(req,res) =>{
+const saveCategory = async(req,res,next) =>{
     try {
         const id = req.params.id
         const name = req.body.categoryName;
@@ -66,7 +66,7 @@ const saveCategory = async(req,res) =>{
             res.redirect('/admin/categoryList')
         }
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
